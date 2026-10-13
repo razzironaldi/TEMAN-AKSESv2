@@ -159,6 +159,406 @@ body {
   -webkit-box-decoration-break: clone;
 }
 
+.companion-launcher .companion-avatar {
+  animation: companion-float 3.8s ease-in-out infinite;
+}
+
+.companion-avatar {
+  position: relative;
+  display: inline-flex;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 0.27rem;
+  overflow: hidden;
+  border: 2px solid var(--color-primary-900);
+  border-radius: 46% 46% 40% 40%;
+  background: var(--color-primary-400);
+  box-shadow: inset 0 -0.35rem 0 rgb(3 42 42 / 12%);
+}
+
+.companion-avatar::before {
+  position: absolute;
+  top: -0.18rem;
+  left: 0.45rem;
+  width: 0.65rem;
+  height: 0.55rem;
+  border: 2px solid var(--color-primary-900);
+  border-bottom: 0;
+  border-radius: 80% 20% 0 0;
+  background: var(--color-accent-300);
+  content: '';
+  transform: rotate(-14deg);
+}
+
+.companion-eye {
+  z-index: 1;
+  width: 0.48rem;
+  height: 0.62rem;
+  margin-top: -0.14rem;
+  border-radius: 50%;
+  background: var(--color-primary-950);
+  animation: companion-blink 5.2s ease-in-out infinite;
+}
+
+.companion-eye:nth-child(2) {
+  animation-delay: 0.08s;
+}
+
+.companion-mouth {
+  position: absolute;
+  bottom: 0.62rem;
+  left: 50%;
+  width: 0.5rem;
+  height: 0.24rem;
+  border-bottom: 2px solid var(--color-primary-950);
+  border-radius: 0 0 50% 50%;
+  transform: translateX(-50%);
+}
+
+.companion-avatar.is-listening .companion-eye {
+  transform: scaleY(0.72);
+}
+
+.quiz-mascot {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  overflow: hidden;
+  margin-top: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.875rem;
+  background: var(--color-surface-elevated);
+  padding: 0.875rem;
+}
+
+.quiz-mascot-character {
+  position: relative;
+  width: 7rem;
+  height: 8.25rem;
+  flex: 0 0 auto;
+}
+
+.quiz-mascot-shadow {
+  position: absolute;
+  right: 0.8rem;
+  bottom: 0.15rem;
+  left: 0.8rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: rgb(7 133 124 / 16%);
+  animation: quiz-shadow-breathe 3.6s ease-in-out infinite;
+}
+
+.quiz-mascot-body {
+  position: absolute;
+  z-index: 2;
+  top: 0.3rem;
+  left: 1.13rem;
+  width: 4.75rem;
+  height: 5.35rem;
+  border: 3px solid var(--color-primary-900);
+  border-radius: 48% 48% 43% 43% / 42% 42% 48% 48%;
+  background: #a5e9df;
+  box-shadow: inset -0.25rem -0.45rem 0 rgb(7 133 124 / 15%), inset 0.35rem 0.3rem 0 rgb(255 255 255 / 28%);
+  transform-origin: 50% 85%;
+}
+
+.quiz-mascot-body::before {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.92rem;
+  width: 0.32rem;
+  height: 0.18rem;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 65%);
+  content: '';
+  transform: rotate(-35deg);
+}
+
+.quiz-mascot-eye {
+  position: absolute;
+  top: 1.75rem;
+  width: 0.7rem;
+  height: 0.84rem;
+  border-radius: 50%;
+  background: var(--color-primary-950);
+  transform-origin: center;
+  animation: quiz-eye-life 5s ease-in-out infinite;
+}
+
+.quiz-mascot-eye-left { left: 1.15rem; }
+.quiz-mascot-eye-right { right: 1.15rem; animation-delay: 0.05s; }
+
+.quiz-mascot-mouth {
+  position: absolute;
+  bottom: 1.22rem;
+  left: 50%;
+  width: 1.2rem;
+  height: 0.62rem;
+  border-bottom: 3px solid var(--color-primary-950);
+  border-radius: 0 0 55% 55%;
+  transform: translateX(-50%);
+}
+
+.quiz-mascot-mouth-soft {
+  width: 0.8rem;
+  height: 0.3rem;
+  border-bottom-width: 2px;
+}
+
+.quiz-mascot-cheek {
+  position: absolute;
+  top: 2.75rem;
+  width: 0.5rem;
+  height: 0.25rem;
+  border-radius: 50%;
+  background: var(--color-accent-300);
+  opacity: 0.85;
+}
+
+.quiz-mascot-cheek-left { left: 0.54rem; }
+.quiz-mascot-cheek-right { right: 0.54rem; }
+
+.quiz-mascot-arm {
+  position: absolute;
+  z-index: 3;
+  top: 3.6rem;
+  width: 2.35rem;
+  height: 1.05rem;
+  border: 3px solid var(--color-primary-900);
+  border-radius: 999px;
+  background: #a5e9df;
+  transform-origin: center right;
+}
+
+.quiz-mascot-arm span {
+  position: absolute;
+  top: -0.04rem;
+  width: 0.95rem;
+  height: 0.95rem;
+  border: 2px solid var(--color-primary-900);
+  border-radius: 50%;
+  background: var(--color-primary-50);
+}
+
+.quiz-mascot-arm-left { left: -0.25rem; transform: rotate(20deg); transform-origin: right center; }
+.quiz-mascot-arm-left span { left: -0.34rem; }
+.quiz-mascot-arm-right { right: -0.25rem; transform: rotate(-20deg); transform-origin: left center; }
+.quiz-mascot-arm-right span { right: -0.34rem; }
+
+.quiz-mascot-leg {
+  position: absolute;
+  z-index: 1;
+  top: 5.1rem;
+  width: 0.82rem;
+  height: 1.35rem;
+  border: 3px solid var(--color-primary-900);
+  border-top: 0;
+  border-radius: 0 0 0.5rem 0.5rem;
+  background: #a5e9df;
+  transform-origin: top center;
+}
+
+.quiz-mascot-leg span {
+  position: absolute;
+  bottom: -0.16rem;
+  width: 0.9rem;
+  height: 0.45rem;
+  border: 3px solid var(--color-primary-900);
+  border-radius: 0.65rem 0.65rem 0.45rem 0.45rem;
+  background: #b9f0e8;
+}
+
+.quiz-mascot-leg-left { left: 2.25rem; }
+.quiz-mascot-leg-left span { left: -0.28rem; }
+.quiz-mascot-leg-right { right: 2.25rem; }
+.quiz-mascot-leg-right span { right: -0.28rem; }
+
+.quiz-mascot-gesture {
+  position: absolute;
+  z-index: 3;
+  top: 0.25rem;
+  right: 0.05rem;
+  color: var(--color-accent-700);
+  opacity: 0;
+  transform: scale(0.6) rotate(-20deg);
+}
+
+.quiz-mascot-correct .quiz-mascot-mouth-smile,
+.quiz-mascot-perfect .quiz-mascot-mouth-smile {
+  height: 0.7rem;
+  border-bottom-width: 4px;
+  animation: quiz-smile-bounce 1.2s ease-in-out infinite;
+}
+
+.quiz-mascot-incorrect .quiz-mascot-mouth-soft {
+  transform: translateX(-50%) rotate(-4deg);
+}
+
+.quiz-character-idle .quiz-mascot-body,
+.quiz-character-completed .quiz-mascot-body {
+  animation: quiz-body-breathe 3.6s ease-in-out infinite;
+}
+
+.quiz-character-clapping .quiz-mascot-body {
+  animation: quiz-body-applause 900ms ease-in-out infinite;
+}
+
+.quiz-character-clapping .quiz-mascot-arm-left {
+  animation: quiz-clap-left 420ms ease-in-out infinite;
+}
+
+.quiz-character-clapping .quiz-mascot-arm-right {
+  animation: quiz-clap-right 420ms ease-in-out infinite;
+}
+
+.quiz-character-clapping .quiz-mascot-gesture,
+.quiz-character-perfect .quiz-mascot-gesture {
+  opacity: 1;
+  animation: quiz-gesture-pop 1.2s ease-in-out infinite;
+}
+
+.quiz-character-supportive .quiz-mascot-arm-right {
+  animation: quiz-friendly-wave 1.15s ease-in-out infinite;
+}
+
+.quiz-character-perfect .quiz-mascot-body {
+  animation: quiz-happy-dance 1.35s ease-in-out infinite;
+}
+
+.quiz-character-perfect .quiz-mascot-arm-left {
+  animation: quiz-celebrate-left 1.05s ease-in-out infinite;
+}
+
+.quiz-character-perfect .quiz-mascot-arm-right {
+  animation: quiz-celebrate-right 1.05s ease-in-out infinite;
+}
+
+.quiz-character-perfect .quiz-mascot-leg-left {
+  animation: quiz-happy-step 480ms ease-in-out infinite alternate;
+}
+
+.quiz-character-perfect .quiz-mascot-leg-right {
+  animation: quiz-happy-step 480ms ease-in-out infinite alternate-reverse;
+}
+
+.quiz-confetti span {
+  position: absolute;
+  top: -0.75rem;
+  width: 0.45rem;
+  height: 0.8rem;
+  border-radius: 2px;
+  background: var(--color-accent-500);
+  animation: quiz-confetti-fall 850ms ease-out both;
+}
+
+.quiz-confetti span:nth-child(1) { left: 22%; }
+.quiz-confetti span:nth-child(2) { left: 42%; background: var(--color-primary-500); animation-delay: 80ms; }
+.quiz-confetti span:nth-child(3) { left: 62%; background: var(--color-accent-700); animation-delay: 140ms; }
+.quiz-confetti span:nth-child(4) { left: 78%; background: var(--color-primary-700); animation-delay: 40ms; }
+.quiz-confetti span:nth-child(5) { left: 90%; animation-delay: 190ms; }
+
+@keyframes quiz-eye-life {
+  0%, 40%, 44%, 100% { transform: translateX(0) scaleY(1); }
+  42% { transform: translateX(0) scaleY(0.12); }
+  68% { transform: translateX(1px) scaleY(1); }
+  86% { transform: translateX(-1px) scaleY(1); }
+}
+
+@keyframes quiz-body-breathe {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  50% { transform: translateY(-3px) rotate(1deg); }
+}
+
+@keyframes quiz-shadow-breathe {
+  0%, 100% { transform: scaleX(1); opacity: 0.75; }
+  50% { transform: scaleX(0.82); opacity: 0.45; }
+}
+
+@keyframes quiz-body-applause {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  25%, 75% { transform: translateY(-5px) rotate(-3deg); }
+  50% { transform: translateY(0) rotate(3deg); }
+}
+
+@keyframes quiz-clap-left {
+  0%, 100% { transform: rotate(24deg); }
+  50% { transform: rotate(64deg) translateX(5px); }
+}
+
+@keyframes quiz-clap-right {
+  0%, 100% { transform: rotate(-24deg); }
+  50% { transform: rotate(-64deg) translateX(-5px); }
+}
+
+@keyframes quiz-friendly-wave {
+  0%, 100% { transform: rotate(-24deg); }
+  50% { transform: rotate(-72deg) translateY(-3px); }
+}
+
+@keyframes quiz-happy-dance {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  25% { transform: translateY(-8px) rotate(-7deg); }
+  75% { transform: translateY(-6px) rotate(7deg); }
+}
+
+@keyframes quiz-celebrate-left {
+  0%, 100% { transform: rotate(20deg); }
+  50% { transform: rotate(64deg) translateY(-4px); }
+}
+
+@keyframes quiz-celebrate-right {
+  0%, 100% { transform: rotate(-20deg); }
+  50% { transform: rotate(-64deg) translateY(-4px); }
+}
+
+@keyframes quiz-happy-step {
+  from { transform: rotate(-16deg); }
+  to { transform: rotate(16deg); }
+}
+
+@keyframes quiz-gesture-pop {
+  0%, 100% { opacity: 0.65; transform: scale(0.85) rotate(-12deg); }
+  50% { opacity: 1; transform: scale(1.12) rotate(10deg); }
+}
+
+@keyframes quiz-smile-bounce {
+  0%, 100% { transform: translateX(-50%) scaleY(1); }
+  50% { transform: translateX(-50%) scaleY(1.2); }
+}
+
+@keyframes quiz-confetti-fall {
+  to { transform: translateY(3.5rem) rotate(220deg); opacity: 0; }
+}
+
+@keyframes companion-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes companion-blink {
+  0%,
+  46%,
+  50%,
+  100% {
+    transform: scaleY(1);
+  }
+
+  48% {
+    transform: scaleY(0.12);
+  }
+}
+
 .high-contrast .audio-word-highlight {
   background: #ffeb00;
   color: #000000;

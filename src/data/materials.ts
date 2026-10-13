@@ -1,3 +1,5 @@
+import { inclusiveThemeSeeds } from './inclusiveThemes'
+
 export interface LessonSection {
   id: string
   title: string
@@ -24,6 +26,7 @@ export interface QuizQuestion {
 
 export interface Material {
   id: string
+  categoryId: string
   title: string
   category: string
   description: string
@@ -36,11 +39,61 @@ export interface Material {
   icon: string
 }
 
-export const materials: Material[] = [
+export interface LearningCategory {
+  id: string
+  title: string
+  description: string
+}
+
+export const learningCategories: LearningCategory[] = [
+  {
+    id: 'inclusive-design',
+    title: 'Desain Pembelajaran Inklusif',
+    description: 'Rancang kegiatan belajar yang memberi ruang bagi kebutuhan dan cara belajar yang beragam.',
+  },
+  {
+    id: 'digital-accessibility',
+    title: 'Aksesibilitas Digital',
+    description: 'Pahami dasar teknologi web dan cara membuat konten digital lebih mudah diakses.',
+  },
+  {
+    id: 'assistive-support',
+    title: 'Teknologi Bantu dan Akomodasi',
+    description: 'Kenali pilihan alat bantu dan penyesuaian lingkungan belajar bersama penggunanya.',
+  },
+  {
+    id: 'inclusive-communication',
+    title: 'Komunikasi Inklusif',
+    description: 'Gunakan bahasa yang jelas dan hormati beragam cara orang berkomunikasi.',
+  },
+  {
+    id: 'adaptive-learning',
+    title: 'Strategi Belajar Adaptif',
+    description: 'Temukan strategi untuk mengatur fokus, energi, dan proses belajar diri sendiri.',
+  },
+  {
+    id: 'digital-literacy',
+    title: 'Literasi Digital dan Keamanan',
+    description: 'Bangun kebiasaan digital yang kritis, aman, dan menghargai orang lain.',
+  },
+  {
+    id: 'safe-community',
+    title: 'Relasi dan Lingkungan Belajar Aman',
+    description: 'Bangun rasa memiliki, kerja sama, dan lingkungan belajar yang menghormati semua orang.',
+  },
+  {
+    id: 'agency-participation',
+    title: 'Kemandirian dan Partisipasi',
+    description: 'Dukung pilihan, suara, dan keterlibatan pelajar dalam pengalaman belajarnya.',
+  },
+]
+
+const baseMaterials: Material[] = [
   {
     id: 'dasar-web',
+    categoryId: 'digital-accessibility',
     title: 'Dasar Pemrograman Web',
-    category: 'Teknologi',
+    category: 'Aksesibilitas Digital',
     description:
       'Pelajari fondasi HTML, CSS, dan JavaScript untuk membangun halaman web pertamamu.',
     level: 'Pemula',
@@ -145,8 +198,9 @@ export const materials: Material[] = [
   },
   {
     id: 'literasi-digital',
+    categoryId: 'digital-literacy',
     title: 'Literasi Digital Sehari-hari',
-    category: 'Keterampilan',
+    category: 'Literasi Digital dan Keamanan',
     description:
       'Cara mengenali informasi yang dapat dipercaya dan menjaga keamanan data pribadi saat online.',
     level: 'Pemula',
@@ -237,8 +291,9 @@ export const materials: Material[] = [
   },
   {
     id: 'belajar-efektif',
+    categoryId: 'adaptive-learning',
     title: 'Strategi Belajar Efektif',
-    category: 'Pengembangan Diri',
+    category: 'Strategi Belajar Adaptif',
     description:
       'Teknik belajar yang terbukti membantu memahami materi lebih dalam dan bertahan lama.',
     level: 'Menengah',
@@ -327,6 +382,30 @@ export const materials: Material[] = [
     ],
   },
 ]
+
+const additionalMaterials: Material[] = inclusiveThemeSeeds.map((theme) => ({
+  id: theme.id,
+  categoryId: theme.categoryId,
+  title: theme.title,
+  category: theme.category,
+  description: theme.description,
+  level: theme.level,
+  totalDuration: theme.sections.length * 8,
+  sections: theme.sections.map((section, index) => ({
+    id: `${theme.id}-${index + 1}`,
+    title: section.title,
+    simpleSummary: section.summary,
+    paragraphs: [section.summary, section.detail],
+    keyPoints: section.keyPoints,
+    duration: 8,
+  })),
+  glossary: [],
+  quiz: [{ id: `${theme.id}-quiz`, ...theme.quiz }],
+  accent: 'primary',
+  icon: theme.icon,
+}))
+
+export const materials: Material[] = [...baseMaterials, ...additionalMaterials]
 
 export const getMaterial = (id: string) => materials.find((m) => m.id === id)
 

@@ -3,6 +3,8 @@ import { persist } from 'zustand/middleware'
 
 export type LearningMode = 'focus' | 'audio' | 'simple'
 export type ReadingTheme = 'light' | 'soft' | 'high-contrast'
+export type QuizMode = 'santai' | 'hard'
+export type MascotState = 'idle' | 'correct' | 'incorrect' | 'completed' | 'perfect' | 'encouragement'
 
 export interface LessonProgress {
   completed: boolean
@@ -29,6 +31,11 @@ interface AppState {
   onboardingComplete: boolean
   lessonProgress: Record<string, LessonProgress>
   quizReview: Record<string, QuizReviewProgress>
+  isQuizActive: boolean
+  quizMode: QuizMode
+  currentQuestionIndex: number
+  score: number
+  mascotState: MascotState
 
   toggleLearningMode: (mode: LearningMode) => void
   clearLearningModes: () => void
@@ -42,6 +49,13 @@ interface AppState {
   toggleBookmark: (id: string) => void
   accessLesson: (id: string) => void
   recordQuizAnswer: (questionId: string, correct: boolean) => void
+  setQuizMode: (mode: QuizMode) => void
+  startQuizSession: () => void
+  setCurrentQuestionIndex: (index: number) => void
+  addQuizPoint: () => void
+  setMascotState: (state: MascotState) => void
+  finishQuizSession: () => void
+  resetQuizSession: () => void
   resetPreferences: () => void
 }
 
@@ -55,6 +69,11 @@ const defaultState = {
   onboardingComplete: false,
   lessonProgress: {} as Record<string, LessonProgress>,
   quizReview: {} as Record<string, QuizReviewProgress>,
+  isQuizActive: false,
+  quizMode: 'santai' as QuizMode,
+  currentQuestionIndex: 0,
+  score: 0,
+  mascotState: 'idle' as MascotState,
 }
 
 type LegacyTextSize = 'normal' | 'large' | 'extra-large'
@@ -158,6 +177,14 @@ export const useStore = create<AppState>()(
           }
         }),
 
+      setQuizMode: (quizMode) => set({ quizMode }),
+      startQuizSession: () => set({ isQuizActive: true, currentQuestionIndex: 0, score: 0, mascotState: 'idle' }),
+      setCurrentQuestionIndex: (currentQuestionIndex) => set({ currentQuestionIndex, mascotState: 'idle' }),
+      addQuizPoint: () => set((s) => ({ score: s.score + 1 })),
+      setMascotState: (mascotState) => set({ mascotState }),
+      finishQuizSession: () => set({ isQuizActive: false }),
+      resetQuizSession: () => set({ isQuizActive: false, currentQuestionIndex: 0, score: 0, mascotState: 'idle' }),
+
       resetPreferences: () =>
         set((s) => ({
           ...defaultState,
@@ -170,6 +197,14 @@ export const useStore = create<AppState>()(
     {
       name: 'temanakses-storage',
       version: 3,
+      partialize: ({
+        isQuizActive: _isQuizActive,
+        quizMode: _quizMode,
+        currentQuestionIndex: _currentQuestionIndex,
+        score: _score,
+        mascotState: _mascotState,
+        ...persisted
+      }) => persisted,
       migrate: (persistedState, version) => {
         const saved = (persistedState ?? {}) as PersistedAppState
         if (version >= 2) return { ...defaultState, ...saved } as AppState

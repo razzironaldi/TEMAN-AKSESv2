@@ -151,13 +151,13 @@ export function DashboardPage() {
 
       <section data-scroll-reveal aria-labelledby="materials-heading" className="mb-8">
         <div className="flex items-center justify-between mb-4">
-          <h2 id="materials-heading" className="text-lg font-bold text-text-primary">Materi Tersedia</h2>
+          <h2 id="materials-heading" className="text-lg font-bold text-text-primary">Mulai dari tema ini</h2>
           <Link to="/materials" className="text-sm font-medium text-primary-600 hover:text-primary-700 transition-colors">
-            Lihat semua
+            Jelajahi {materials.length} tema
           </Link>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {materials.map((m) => {
+          {materials.slice(0, 3).map((m) => {
             const done = m.sections.filter((s) => lessonProgress[s.id]?.completed).length
             const pct = Math.round((done / m.sections.length) * 100)
             return (

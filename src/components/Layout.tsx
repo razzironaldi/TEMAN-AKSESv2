@@ -2,9 +2,11 @@ import { Outlet } from 'react-router-dom'
 import { Navbar } from './Navbar'
 import { useStore } from '../store'
 import { cn } from '../lib/cn'
+import { StudyCompanion } from './StudyCompanion'
 
 export function Layout() {
   const { learningModes, pageTheme, toggleLearningMode } = useStore()
+  const isQuizActive = useStore((state) => state.isQuizActive)
 
   return (
     <div
@@ -33,6 +35,7 @@ export function Layout() {
       <main className="min-h-[calc(100dvh-4rem)] pb-20 md:pb-0">
         <Outlet />
       </main>
+      <StudyCompanion key={isQuizActive ? 'quiz-active' : 'quiz-inactive'} />
     </div>
   )
 }

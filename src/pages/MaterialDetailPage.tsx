@@ -18,7 +18,7 @@ import { AudioPlayer } from '../components/AudioPlayer'
 import type { AudioHighlightRange } from '../components/AudioPlayer'
 import { GlossaryPopover } from '../components/GlossaryPopover'
 import { GlossaryText } from '../components/GlossaryText'
-import { MiniQuiz } from '../components/MiniQuiz'
+import { QuizSection } from '../components/QuizSection'
 import { ReadingStudio } from '../components/ReadingStudio'
 import { useStore } from '../store'
 import { getMaterial } from '../data/materials'
@@ -356,8 +356,8 @@ export function MaterialDetailPage() {
             </div>
 
             {activeSection === material.sections.length - 1 && (
-              <MiniQuiz
-                key={reviewQuestionId ?? 'all-questions'}
+              <QuizSection
+                key={`${material.id}-${reviewQuestionId ?? 'all-questions'}`}
                 questions={material.quiz}
                 reviewQuestionId={reviewQuestionId}
               />
