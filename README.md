@@ -101,7 +101,7 @@ Mode jawaban lokal Aksa tersedia tanpa konfigurasi tambahan. Setup Gemini untuk 
 
 ## Deploy Prototipe
 
-Konfigurasi [railway.json](railway.json) menetapkan `npm run build`, `npm start`, dan healthcheck API. Tambahkan `GEMINI_API_KEY` pada Variables service Railway; `GEMINI_MODEL` bersifat opsional. Setelah deploy, tanpa variable server tersebut aplikasi tetap terbuka tetapi Aksa hanya memakai jawaban lokal.
+Konfigurasi [railway.json](railway.json) menetapkan `npm run build`, `npm start`, dan healthcheck API. Tambahkan `GEMINI_API_KEY` pada Variables service Railway; model default `gemini-3.5-flash-lite` dapat diganti dengan `GEMINI_MODEL`. Tanpa variable key, Aksa hanya memakai jawaban lokal.
 
 ## Status
 

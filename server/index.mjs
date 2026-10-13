@@ -5,7 +5,7 @@ import { extname, isAbsolute, relative, resolve, sep } from 'node:path'
 const apiOnly = process.argv.includes('--api-only')
 const host = process.env.HOST || (apiOnly ? '127.0.0.1' : '0.0.0.0')
 const port = Number(process.env.PORT || process.env.API_PORT || 8787)
-const defaultModel = 'gemini-3.8-flash'
+const defaultModel = 'gemini-3.5-flash-lite'
 const rateLimits = new Map()
 const maxBodyBytes = 24_000
 const distDirectory = resolve(process.cwd(), 'dist')

@@ -84,7 +84,7 @@ Pengaturan teknis:
 
 - `.env.example` adalah contoh konfigurasi; buat `.env.local` lokal dengan `GEMINI_API_KEY` dan, bila perlu, `GEMINI_MODEL`.
 - `.env.local` diabaikan Git oleh aturan `*.local`. Jangan masukkan kunci API ke source frontend, commit, atau percakapan. Cabut kunci yang pernah terekspos.
-- Model default saat ini `gemini-3.8-flash`; model dapat diganti lewat `GEMINI_MODEL` jika akun mendukungnya.
+- Model default saat ini `gemini-3.5-flash-lite` (sudah diuji untuk request teks); model dapat diganti lewat `GEMINI_MODEL` jika akun mendukungnya.
 - Dalam development, `npm run dev:api` menjalankan API-only di `127.0.0.1:8787`; Vite mem-proxy `/api` ke server tersebut.
 - Dalam production, `npm start` menjalankan server yang bind ke `0.0.0.0:$PORT`, melayani frontend SPA dari `dist`, serta endpoint API pada origin yang sama.
 - `server/index.mjs` membatasi body, panjang konteks, waktu request, dan request per alamat klien. Log hanya mencatat status/kode error; jangan menambah log kunci atau body berisi data pengguna.
@@ -97,7 +97,7 @@ Menjalankan mode AI lokal:
 
 ```text
 GEMINI_API_KEY=masukkan_kunci_baru_di_lingkungan_lokal
-GEMINI_MODEL=gemini-3.8-flash
+GEMINI_MODEL=gemini-3.5-flash-lite
 ```
 
 Simpan nilai tersebut hanya di `.env.local`, kemudian jalankan pada terminal terpisah:
