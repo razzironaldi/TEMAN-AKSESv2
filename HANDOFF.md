@@ -78,15 +78,18 @@ server/
 Aksa dapat berjalan dalam dua cara:
 
 - Tanpa server/kunci: jawaban lokal dicocokkan dari glosarium, ringkasan, soal, dan subtema yang tersedia.
-- Dengan server lokal dan `GROQ_API_KEY`: pertanyaan dan konteks materi terkait dikirim ke Groq melalui proxy server. Jangan mengirim kata sandi, data pribadi, atau informasi sensitif.
+- Dengan server Node dan `GROQ_API_KEY`: pertanyaan dan konteks materi terkait dikirim ke Groq melalui proxy server. Jangan mengirim kata sandi, data pribadi, atau informasi sensitif.
 
 Pengaturan teknis:
 
 - `.env.example` adalah contoh konfigurasi; buat `.env.local` lokal dengan `GROQ_API_KEY` dan, bila perlu, `GROQ_MODEL`.
 - `.env.local` diabaikan Git oleh aturan `*.local`. Jangan masukkan kunci API ke source frontend, commit, atau percakapan. Cabut kunci yang pernah terekspos.
 - Model default saat ini `openai/gpt-oss-20b`; model dapat diganti lewat `GROQ_MODEL` jika akun mendukungnya.
-- `server/index.mjs` mengikat ke `127.0.0.1:8787`, membatasi body, panjang konteks, waktu request, dan request lokal per menit. Log hanya mencatat status/kode error; jangan menambah log kunci atau body berisi data pengguna.
-- `vite.config.ts` mem-proxy `/api` ke server lokal untuk pengembangan. Ini bukan konfigurasi backend deployment produksi.
+- Dalam development, `npm run dev:api` menjalankan API-only di `127.0.0.1:8787`; Vite mem-proxy `/api` ke server tersebut.
+- Dalam production, `npm start` menjalankan server yang bind ke `0.0.0.0:$PORT`, melayani frontend SPA dari `dist`, serta endpoint API pada origin yang sama.
+- `server/index.mjs` membatasi body, panjang konteks, waktu request, dan request per alamat klien. Log hanya mencatat status/kode error; jangan menambah log kunci atau body berisi data pengguna.
+- `railway.json` menetapkan build command `npm run build`, start command `npm start`, dan healthcheck `/api/companion/status`.
+- Set `GROQ_API_KEY` pada Variables service Railway. Variable `.env.local` lokal tidak dikirim saat deploy; setelah variable ditambah, redeploy service.
 - Prompt membatasi Aksa ke materi yang diberikan, tetapi model masih dapat keliru. Hasil AI bukan nasihat medis atau konseling.
 
 Menjalankan mode AI lokal:
@@ -129,7 +132,7 @@ npm run build
 npm run lint
 ```
 
-Script `npm run dev:api` diperlukan hanya untuk mode Groq lokal. Belum ada test suite otomatis; uji interaksi, keyboard, reduced motion, dan viewport mobile pada alur yang berubah.
+Script `npm run dev:api` diperlukan untuk mode Groq lokal saat Vite berjalan. Untuk deployment Node gunakan `npm run build` lalu `npm start`. Belum ada test suite otomatis; uji interaksi, keyboard, reduced motion, dan viewport mobile pada alur yang berubah.
 
 ## Status dan Batasan
 
@@ -139,7 +142,7 @@ Script `npm run dev:api` diperlukan hanya untuk mode Groq lokal. Belum ada test 
 - Ketersediaan suara dan event batas kata Web Speech bergantung browser/perangkat.
 - Kuis tema inklusif tambahan masih memiliki satu soal per tema.
 - Pencocokan lokal Aksa berbasis kata kunci dan terbatas pada konten yang tersedia.
-- Integrasi Groq lokal untuk prototipe, bukan backend produksi; pertanyaan/konteks dikirim ke layanan Groq jika diaktifkan.
+- Integrasi Groq melalui Node untuk prototipe, bukan backend produksi yang hardened; pertanyaan/konteks dikirim ke layanan Groq jika variable server aktif.
 - Konten BISINDO hanya memberi arahan belajar dari komunitas/pengajar kompeten; tidak memuat video atau klaim kosakata isyarat yang belum diverifikasi.
 
 Roadmap offline/PWA, konten BISINDO tervalidasi, dan sinkronisasi akun perlu perencanaan serta validasi pengguna. Pomodoro wajib, generator materi/kuis AI, dan pemecahan suku kata otomatis belum menjadi prioritas.

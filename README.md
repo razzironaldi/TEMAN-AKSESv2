@@ -10,7 +10,7 @@ TemanAkses adalah prototipe platform belajar adaptif berbahasa Indonesia, dibuat
 
 Platform ini membantu pelajar mengatur cara membaca dan berinteraksi dengan materi. Prinsip produknya sejalan dengan pendidikan inklusif dan Universal Design for Learning (UDL): sediakan berbagai cara untuk memahami informasi dan berpartisipasi, tanpa mengasumsikan semua pengguna memiliki kebutuhan yang sama.
 
-**Kondisi saat ini:** aplikasi dengan materi statis dan penyimpanan per browser. Belum ada akun atau sinkronisasi perangkat. Server Node lokal opsional dapat menghubungkan teman belajar Aksa ke Groq untuk keperluan prototipe; belum ada backend produksi.
+**Kondisi saat ini:** aplikasi dengan materi statis dan penyimpanan per browser. Belum ada akun atau sinkronisasi perangkat. Server Node dapat menyajikan frontend sekaligus proxy Groq untuk deployment prototipe; backend produksi yang hardened belum tersedia.
 
 ## Prinsip Produk dan UX
 
@@ -86,7 +86,7 @@ Platform ini membantu pelajar mengatur cara membaca dan berinteraksi dengan mate
 - Web Speech API bawaan browser
 - Node.js HTTP server untuk proxy Groq lokal (opsional saat pengembangan)
 
-Penyimpanan progres berlangsung di browser. Server Node lokal opsional menjadi proxy Groq saat prototipe; belum ada akun, sinkronisasi, atau backend produksi.
+Penyimpanan progres berlangsung di browser. Server Node melayani frontend dan proxy Groq dalam satu proses saat deployment prototipe; belum ada akun atau sinkronisasi.
 
 ## Mulai Mencoba
 
@@ -98,6 +98,10 @@ npm run dev
 ```
 
 Mode jawaban lokal Aksa tersedia tanpa konfigurasi tambahan. Setup Groq untuk prototipe dan perintah validasi pengembang dijelaskan di [HANDOFF.md](HANDOFF.md).
+
+## Deploy Prototipe
+
+Konfigurasi [railway.json](railway.json) menetapkan `npm run build`, `npm start`, dan healthcheck API. Tambahkan `GROQ_API_KEY` pada Variables service Railway; `GROQ_MODEL` bersifat opsional. Setelah deploy, tanpa variable server tersebut aplikasi tetap terbuka tetapi Aksa hanya memakai jawaban lokal.
 
 ## Status
 

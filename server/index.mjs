@@ -1,10 +1,28 @@
 import { createServer } from 'node:http'
+import { readFile, stat } from 'node:fs/promises'
+import { extname, isAbsolute, relative, resolve, sep } from 'node:path'
 
-const host = '127.0.0.1'
-const port = Number(process.env.API_PORT || 8787)
+const apiOnly = process.argv.includes('--api-only')
+const host = process.env.HOST || (apiOnly ? '127.0.0.1' : '0.0.0.0')
+const port = Number(process.env.PORT || process.env.API_PORT || 8787)
 const defaultModel = 'openai/gpt-oss-20b'
 const rateLimits = new Map()
 const maxBodyBytes = 24_000
+const distDirectory = resolve(process.cwd(), 'dist')
+
+const contentTypes = {
+  '.css': 'text/css; charset=utf-8',
+  '.html': 'text/html; charset=utf-8',
+  '.ico': 'image/x-icon',
+  '.js': 'text/javascript; charset=utf-8',
+  '.json': 'application/json; charset=utf-8',
+  '.png': 'image/png',
+  '.svg': 'image/svg+xml',
+  '.txt': 'text/plain; charset=utf-8',
+  '.webp': 'image/webp',
+  '.woff': 'font/woff',
+  '.woff2': 'font/woff2',
+}
 
 function sendJson(response, status, payload) {
   response.writeHead(status, {
@@ -35,6 +53,54 @@ function isRateLimited(address) {
   return entry.count > 20
 }
 
+async function serveFrontend(request, response, pathname) {
+  if (!['GET', 'HEAD'].includes(request.method ?? '')) {
+    sendJson(response, 405, { error: 'Metode tidak didukung.' })
+    return
+  }
+
+  let decodedPath
+  try {
+    decodedPath = decodeURIComponent(pathname)
+  } catch {
+    sendJson(response, 400, { error: 'Path tidak valid.' })
+    return
+  }
+
+  const requestedPath = decodedPath === '/' ? '/index.html' : decodedPath
+  const candidate = resolve(distDirectory, `.${requestedPath}`)
+  const relativePath = relative(distDirectory, candidate)
+  if (relativePath === '..' || relativePath.startsWith(`..${sep}`) || isAbsolute(relativePath)) {
+    sendJson(response, 403, { error: 'Path tidak diizinkan.' })
+    return
+  }
+
+  let filePath = candidate
+  try {
+    if ((await stat(filePath)).isDirectory()) filePath = resolve(filePath, 'index.html')
+  } catch {
+    if (extname(requestedPath)) {
+      sendJson(response, 404, { error: 'File tidak ditemukan.' })
+      return
+    }
+    filePath = resolve(distDirectory, 'index.html')
+  }
+
+  try {
+    const contents = await readFile(filePath)
+    const isHashedAsset = requestedPath.startsWith('/assets/')
+    response.writeHead(200, {
+      'content-type': contentTypes[extname(filePath).toLowerCase()] ?? 'application/octet-stream',
+      'cache-control': isHashedAsset ? 'public, max-age=31536000, immutable' : 'no-cache',
+      'x-content-type-options': 'nosniff',
+      'x-frame-options': 'SAMEORIGIN',
+    })
+    response.end(request.method === 'HEAD' ? undefined : contents)
+  } catch {
+    sendJson(response, 503, { error: 'Frontend belum dibangun. Jalankan npm run build.' })
+  }
+}
+
 const server = createServer(async (request, response) => {
   const pathname = new URL(request.url ?? '/', `http://${host}`).pathname
 
@@ -47,6 +113,10 @@ const server = createServer(async (request, response) => {
   }
 
   if (pathname !== '/api/companion' || request.method !== 'POST') {
+    if (!apiOnly && !pathname.startsWith('/api/')) {
+      await serveFrontend(request, response, pathname)
+      return
+    }
     sendJson(response, 404, { error: 'Endpoint tidak ditemukan.' })
     return
   }
@@ -138,6 +208,6 @@ const server = createServer(async (request, response) => {
 })
 
 server.listen(port, host, () => {
-  console.log(`Aksa API listening at http://${host}:${port}`)
+  console.log(`TemanAkses server listening at http://${host}:${port}`)
   console.log(`Groq key ${process.env.GROQ_API_KEY ? 'configured' : 'not configured'}; model ${process.env.GROQ_MODEL || defaultModel}`)
 })

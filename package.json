@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "dev:api": "node --watch --env-file-if-exists=.env.local server/index.mjs",
+    "dev:api": "node --watch --env-file-if-exists=.env.local server/index.mjs --api-only",
+    "start": "node --env-file-if-exists=.env.local server/index.mjs",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview"

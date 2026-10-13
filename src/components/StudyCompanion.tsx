@@ -120,6 +120,12 @@ function createAnswer(question: string, activeMaterial: Material | undefined, ac
   return `Aku belum menemukan jawabannya di materi TemanAkses. Coba tanyakan tentang ${categorySuggestions}.`
 }
 
+function getAiSetupMessage() {
+  return import.meta.env.DEV
+    ? 'Untuk mengaktifkan AI, isi GROQ_API_KEY di .env.local lalu jalankan server API.'
+    : 'AI belum diaktifkan di server deployment ini. Pengelola perlu mengatur GROQ_API_KEY pada environment server.'
+}
+
 function CompanionAvatar({ listening = false }: { listening?: boolean }) {
   return (
     <span className={`companion-avatar${listening ? ' is-listening' : ''}`} aria-hidden="true">
@@ -215,7 +221,7 @@ export function StudyCompanion() {
     setDraft('')
 
     if (aiConfigured === false) {
-      appendCompanionMessage(`Mode lokal: ${createAnswer(question, activeMaterial, activeSectionId)} Untuk mengaktifkan AI, isi GROQ_API_KEY di .env.local lalu jalankan server API.`)
+      appendCompanionMessage(`Mode lokal: ${createAnswer(question, activeMaterial, activeSectionId)} ${getAiSetupMessage()}`)
       return
     }
 
@@ -234,7 +240,7 @@ export function StudyCompanion() {
         appendCompanionMessage(result.answer)
       } else if (result.code === 'AI_NOT_CONFIGURED') {
         setAiConfigured(false)
-        appendCompanionMessage(`Mode lokal: ${createAnswer(question, activeMaterial, activeSectionId)} Untuk mengaktifkan AI, isi GROQ_API_KEY di .env.local lalu jalankan server API.`)
+        appendCompanionMessage(`Mode lokal: ${createAnswer(question, activeMaterial, activeSectionId)} ${getAiSetupMessage()}`)
       } else {
         appendCompanionMessage(`${result.error ?? 'Aksa belum dapat menjawab sekarang.'} ${createAnswer(question, activeMaterial, activeSectionId)}`)
       }
