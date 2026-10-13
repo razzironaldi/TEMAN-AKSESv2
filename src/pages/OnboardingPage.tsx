@@ -17,7 +17,7 @@ export function OnboardingPage() {
 
   return (
     <div className="min-h-[calc(100dvh-4rem)] flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-xl">
+      <div data-scroll-reveal className="w-full max-w-xl">
         <div className="flex items-center gap-2 mb-8">
           {[0, 1].map((i) => (
             <div
@@ -68,7 +68,7 @@ export function OnboardingPage() {
               Pilih preferensi belajarmu
             </h1>
             <p className="mt-2 text-text-secondary">
-              Cara belajar yang paling nyaman buat kamu? Bisa diubah kapan saja nanti.
+              Pilih satu atau beberapa cara yang membantumu belajar. Semuanya bisa diubah kapan saja.
             </p>
             <div className="mt-6">
               <ModeSelector />

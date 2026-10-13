@@ -56,17 +56,14 @@ export function LandingPage() {
             <span className="font-bold text-lg text-text-primary tracking-tight">TemanAkses</span>
           </Link>
           <div className="flex items-center gap-3">
-            {onboardingComplete && (
-              <Button to="/dashboard" variant="ghost" size="sm">Dashboard</Button>
-            )}
             <Button to={onboardingComplete ? '/dashboard' : '/onboarding'} size="sm">
-              Mulai Belajar
+              {onboardingComplete ? 'Ke Dashboard' : 'Mulai Belajar'}
             </Button>
           </div>
         </div>
       </nav>
 
-      <section className="relative overflow-hidden bg-gradient-to-b from-primary-50 via-surface to-surface">
+      <section data-scroll-reveal className="relative overflow-hidden bg-gradient-to-b from-primary-50 via-surface to-surface">
         <div className="absolute inset-0 pointer-events-none select-none opacity-30">
           <div className="absolute -top-24 -right-24 h-96 w-96 rounded-full bg-primary-200 blur-3xl" />
           <div className="absolute -bottom-20 -left-20 h-72 w-72 rounded-full bg-accent-200 blur-3xl" />
@@ -142,7 +139,7 @@ export function LandingPage() {
         </div>
       </section>
 
-      <section className="py-20 sm:py-24" aria-labelledby="benefits-heading">
+      <section data-scroll-reveal className="py-20 sm:py-24" aria-labelledby="benefits-heading">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <h2 id="benefits-heading" className="text-2xl sm:text-3xl font-bold text-text-primary text-center">
             Satu tujuan belajar, berbagai cara mengalaminya
@@ -168,7 +165,7 @@ export function LandingPage() {
         </div>
       </section>
 
-      <section className="py-20" aria-labelledby="modes-heading">
+      <section data-scroll-reveal className="py-20" aria-labelledby="modes-heading">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <h2 id="modes-heading" className="text-2xl sm:text-3xl font-bold text-text-primary text-center">
             Lima mode belajar, satu platform
@@ -181,7 +178,7 @@ export function LandingPage() {
               { name: 'Visual', desc: 'Tampilan lengkap dengan visual dan warna', color: 'bg-primary-50 border-primary-200 text-primary-700' },
               { name: 'Fokus', desc: 'Antarmuka minimal tanpa gangguan', color: 'bg-teal-50 border-teal-200 text-teal-700' },
               { name: 'Audio', desc: 'Dengarkan materi secara langsung', color: 'bg-accent-50 border-accent-200 text-accent-700' },
-              { name: 'Sederhana', desc: 'Poin-poin ringkas, mudah dicerna', color: 'bg-blue-50 border-blue-200 text-blue-700' },
+              { name: 'Sederhana', desc: 'Poin penting dulu, penjelasan lengkap tersedia', color: 'bg-blue-50 border-blue-200 text-blue-700' },
               { name: 'Kontras Tinggi', desc: 'Warna tegas, teks lebih jelas', color: 'bg-zinc-100 border-zinc-300 text-zinc-800' },
             ].map((m) => (
               <div key={m.name} className={`rounded-2xl border p-5 ${m.color}`}>
@@ -193,7 +190,7 @@ export function LandingPage() {
         </div>
       </section>
 
-      <section className="py-20 bg-surface-elevated" aria-labelledby="how-heading">
+      <section data-scroll-reveal className="py-20 bg-surface-elevated" aria-labelledby="how-heading">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <h2 id="how-heading" className="text-2xl sm:text-3xl font-bold text-text-primary text-center">
             Bagaimana TemanAkses bekerja?
@@ -210,7 +207,7 @@ export function LandingPage() {
         </div>
       </section>
 
-      <section className="py-20" aria-labelledby="impact-heading">
+      <section data-scroll-reveal className="py-20" aria-labelledby="impact-heading">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <div className="rounded-2xl bg-primary-600 p-8 sm:p-12 text-white">
             <div className="grid sm:grid-cols-2 gap-8 items-center">

@@ -1,7 +1,7 @@
-import type { LearningMode } from '../store'
+import type { LearningMode, ReadingTheme } from '../store'
 
 export interface ModeDefinition {
-  id: LearningMode
+  id: LearningMode | 'visual'
   name: string
   short: string
   description: string
@@ -13,9 +13,9 @@ export const learningModes: ModeDefinition[] = [
   {
     id: 'visual',
     name: 'Visual',
-    short: 'Tampilan standar',
+    short: 'Hapus pilihan tambahan',
     description:
-      'Tampilan lengkap dengan visual, ikon, dan penanda warna untuk membantu memahami materi.',
+      'Gunakan tampilan standar tanpa preferensi tambahan.',
     icon: 'Palette',
     color: 'primary',
   },
@@ -40,21 +40,21 @@ export const learningModes: ModeDefinition[] = [
   {
     id: 'simple',
     name: 'Sederhana',
-    short: 'Bahasa ringkas',
+    short: 'Poin penting dulu',
     description:
-      'Materi disajikan dalam poin-poin singkat dan bahasa yang lebih mudah dicerna.',
+      'Poin penting ditampilkan lebih dulu. Penjelasan lengkap bisa dibuka saat dibutuhkan.',
     icon: 'ListChecks',
     color: 'primary',
   },
-  {
-    id: 'high-contrast',
-    name: 'Kontras Tinggi',
-    short: 'Paling jelas',
-    description:
-      'Kontras warna ditingkatkan dan teks dipertegas untuk membantu keterbacaan.',
-    icon: 'CircleHalf',
-    color: 'accent',
-  },
 ]
 
-export const getMode = (id: LearningMode) => learningModes.find((m) => m.id === id)!
+export const getModeSummary = (selectedModes: LearningMode[], theme: ReadingTheme) => {
+  const names = selectedModes.length === 0
+    ? ['Visual']
+    : learningModes.filter((mode) => mode.id !== 'visual' && selectedModes.includes(mode.id)).map((mode) => mode.name)
+
+  if (theme === 'soft') names.push('Tema lembut')
+  if (theme === 'high-contrast') names.push('Kontras tinggi')
+
+  return names.join(' + ')
+}

@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   ArrowRight,
@@ -13,25 +14,43 @@ import { ProgressBar } from '../components/ProgressBar'
 import { ModeSelector } from '../components/ModeSelector'
 import { useStore } from '../store'
 import { materials, totalLessons } from '../data/materials'
-import { getMode } from '../data/modes'
+import { getModeSummary } from '../data/modes'
 
 export function DashboardPage() {
-  const { userName, learningMode, lessonProgress } = useStore()
-  const mode = getMode(learningMode)
+  const [reviewClock, setReviewClock] = useState(0)
+  const { userName, learningModes, pageTheme, lessonProgress, quizReview } = useStore()
+  const preferenceSummary = getModeSummary(learningModes, pageTheme)
+
+  useEffect(() => {
+    const timeout = window.setTimeout(() => setReviewClock(Date.now()), 0)
+    return () => window.clearTimeout(timeout)
+  }, [])
 
   const completedCount = Object.values(lessonProgress).filter((l) => l.completed).length
   const bookmarkedCount = Object.values(lessonProgress).filter((l) => l.bookmarked).length
   const overallPct = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0
 
-  const recentIds = Object.entries(lessonProgress)
+  const mostRecentLessonId = Object.entries(lessonProgress)
     .filter(([, v]) => v.lastAccessed)
     .sort(([, a], [, b]) => (b.lastAccessed ?? 0) - (a.lastAccessed ?? 0))
-    .slice(0, 3)
-    .map(([k]) => k)
+    .map(([id]) => id)[0]
 
-  const recentMaterial = recentIds.length > 0
-    ? materials.find((m) => m.sections.some((s) => recentIds.includes(s.id)))
+  const recentMaterial = mostRecentLessonId
+    ? materials.find((m) => m.sections.some((s) => s.id === mostRecentLessonId)) ?? materials[0]
     : materials[0]
+  const recentSection = recentMaterial?.sections.find((s) => s.id === mostRecentLessonId)
+  const resumeUrl = recentMaterial
+    ? `/materials/${recentMaterial.id}${recentSection ? `?section=${encodeURIComponent(recentSection.id)}` : ''}`
+    : '/materials'
+  const dueQuizReviews = materials.flatMap((material) =>
+    material.quiz
+      .filter((question) => (quizReview[question.id]?.nextReviewAt ?? Infinity) <= reviewClock)
+      .map((question) => ({
+        material,
+        question,
+        section: material.sections[material.sections.length - 1],
+      }))
+  )
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 py-8">
@@ -41,7 +60,7 @@ export function DashboardPage() {
             Halo, {userName || 'Pelajar'}!
           </h1>
           <p className="mt-1 text-text-secondary">
-            Mode aktif: <strong className="text-primary-700">{mode.name}</strong>
+            Preferensi aktif: <strong className="text-primary-700">{preferenceSummary}</strong>
           </p>
         </div>
         <Button to="/settings" variant="outline" size="sm">
@@ -49,8 +68,8 @@ export function DashboardPage() {
         </Button>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3 mb-8">
-        <Card className="lg:col-span-2">
+      <div data-scroll-reveal className="grid gap-6 lg:grid-cols-3 mb-8">
+        <Card scrollReveal className="lg:col-span-2">
           <CardBody className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
             <div className="flex-1 min-w-0">
               <h2 className="font-semibold text-text-primary">Progres Keseluruhan</h2>
@@ -73,9 +92,11 @@ export function DashboardPage() {
         </Card>
 
         {recentMaterial && (
-          <Card interactive>
+          <Card interactive scrollReveal>
             <CardBody>
-              <p className="text-xs font-semibold text-text-muted uppercase tracking-wide">Lanjutkan Belajar</p>
+              <p className="text-xs font-semibold text-text-muted uppercase tracking-wide">
+                {recentSection ? 'Lanjutkan Belajar' : 'Mulai Belajar'}
+              </p>
               <h3 className="mt-2 font-semibold text-text-primary">{recentMaterial.title}</h3>
               <div className="flex items-center gap-2 mt-2">
                 <Badge>{recentMaterial.level}</Badge>
@@ -84,12 +105,12 @@ export function DashboardPage() {
                 </span>
               </div>
               <Button
-                to={`/materials/${recentMaterial.id}`}
+                to={resumeUrl}
                 size="sm"
                 className="mt-4"
                 fullWidth
               >
-                Lanjutkan
+                {recentSection ? 'Lanjutkan' : 'Mulai Belajar'}
                 <ArrowRight size={16} />
               </Button>
             </CardBody>
@@ -97,7 +118,38 @@ export function DashboardPage() {
         )}
       </div>
 
-      <section aria-labelledby="materials-heading" className="mb-8">
+      {dueQuizReviews.length > 0 && (
+        <section data-scroll-reveal aria-labelledby="review-heading" className="mb-8">
+          <div className="mb-4">
+            <h2 id="review-heading" className="text-lg font-bold text-text-primary">Latihan pengulangan</h2>
+            <p className="mt-1 text-sm text-text-secondary">
+              {dueQuizReviews.length} soal siap diulang. Kerjakan dengan santai, tanpa batas waktu.
+            </p>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {dueQuizReviews.map(({ material, question, section }) => (
+              <Card key={question.id} scrollReveal>
+                <CardBody>
+                  <p className="text-xs font-semibold text-text-muted">{material.title}</p>
+                  <h3 className="mt-2 font-semibold text-text-primary">{question.question}</h3>
+                  <Button
+                    to={`/materials/${material.id}?section=${encodeURIComponent(section.id)}&review=${encodeURIComponent(question.id)}`}
+                    variant="outline"
+                    size="sm"
+                    className="mt-4"
+                    fullWidth
+                  >
+                    Ulangi soal
+                    <ArrowRight size={16} />
+                  </Button>
+                </CardBody>
+              </Card>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <section data-scroll-reveal aria-labelledby="materials-heading" className="mb-8">
         <div className="flex items-center justify-between mb-4">
           <h2 id="materials-heading" className="text-lg font-bold text-text-primary">Materi Tersedia</h2>
           <Link to="/materials" className="text-sm font-medium text-primary-600 hover:text-primary-700 transition-colors">
@@ -110,7 +162,7 @@ export function DashboardPage() {
             const pct = Math.round((done / m.sections.length) * 100)
             return (
               <Link key={m.id} to={`/materials/${m.id}`} className="group">
-                <Card interactive className="h-full">
+                <Card interactive scrollReveal className="h-full">
                   <CardBody>
                     <div className="flex items-start justify-between">
                       <Badge variant={m.accent === 'accent' ? 'accent' : 'primary'}>{m.category}</Badge>
@@ -142,7 +194,7 @@ export function DashboardPage() {
         </div>
       </section>
 
-      <section aria-labelledby="mode-heading" className="focus-hide">
+      <section data-scroll-reveal aria-labelledby="mode-heading" className="focus-hide">
         <h2 id="mode-heading" className="text-lg font-bold text-text-primary mb-4">Mode Belajar</h2>
         <ModeSelector compact />
       </section>

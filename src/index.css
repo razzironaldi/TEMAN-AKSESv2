@@ -32,7 +32,7 @@
 
   --color-text-primary: #0f172a;
   --color-text-secondary: #475569;
-  --color-text-muted: #94a3b8;
+  --color-text-muted: #64748b;
   --color-text-inverse: #ffffff;
 
   --color-border: #e2e8f0;
@@ -70,6 +70,31 @@ html {
   -webkit-text-size-adjust: 100%;
 }
 
+@keyframes route-enter {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.route-transition {
+  animation: route-enter 220ms ease-out both;
+}
+
+[data-scroll-reveal] {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 420ms ease-out, transform 420ms ease-out;
+}
+
+[data-scroll-reveal].is-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 body {
   font-family: var(--font-sans);
   color: var(--color-text-primary);
@@ -97,23 +122,52 @@ body {
   --color-primary-600: #0000aa;
 }
 
+.reading-theme-soft {
+  --color-surface: #fffdf7;
+  --color-surface-elevated: #faf7ed;
+  --color-surface-muted: #f2eee1;
+  --color-surface-hover: #e7e1d2;
+  --color-text-primary: #292820;
+  --color-text-secondary: #44443d;
+  --color-text-muted: #625f53;
+  --color-border: #d7d4c8;
+  --color-border-strong: #bdb8a7;
+}
+
 .high-contrast * {
   border-color: #000000 !important;
 }
 
-.text-size-large {
-  font-size: 118%;
-  line-height: 1.7;
+.reading-content .prose {
+  font-size: var(--reader-font-size, 16px);
+  line-height: var(--reader-line-height, 1.65);
+  letter-spacing: var(--reader-letter-spacing, 0em);
 }
 
-.text-size-extra-large {
-  font-size: 135%;
-  line-height: 1.8;
+.reading-content .prose p,
+.reading-content .prose li {
+  font-size: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
 }
 
-.spacing-relaxed {
-  letter-spacing: 0.02em;
-  word-spacing: 0.08em;
+.audio-word-highlight {
+  border-radius: 0.2rem;
+  background: #ffd98a;
+  color: #0f172a;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+.high-contrast .audio-word-highlight {
+  background: #ffeb00;
+  color: #000000;
+  outline: 2px solid #000000;
+}
+
+.glossary-dialog::backdrop {
+  background: rgb(15 23 42 / 48%);
+  backdrop-filter: blur(2px);
 }
 
 .focus-mode .focus-hide {
@@ -126,6 +180,20 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .route-transition {
+    animation: none;
+  }
+
+  [data-scroll-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
   * {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;

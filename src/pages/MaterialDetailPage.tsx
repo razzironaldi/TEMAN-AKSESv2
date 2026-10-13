@@ -1,5 +1,6 @@
-import { useParams, Link } from 'react-router-dom'
-import { useState, useEffect } from 'react'
+import { useParams, Link, useSearchParams } from 'react-router-dom'
+import { useState, useEffect, useRef } from 'react'
+import type { CSSProperties } from 'react'
 import {
   ArrowLeft,
   BookmarkSimple,
@@ -14,18 +15,34 @@ import { Badge } from '../components/Badge'
 import { ProgressBar } from '../components/ProgressBar'
 import { ModeSelector } from '../components/ModeSelector'
 import { AudioPlayer } from '../components/AudioPlayer'
+import type { AudioHighlightRange } from '../components/AudioPlayer'
+import { GlossaryPopover } from '../components/GlossaryPopover'
+import { GlossaryText } from '../components/GlossaryText'
+import { MiniQuiz } from '../components/MiniQuiz'
+import { ReadingStudio } from '../components/ReadingStudio'
 import { useStore } from '../store'
 import { getMaterial } from '../data/materials'
+import type { GlossaryTerm } from '../data/materials'
 import { cn } from '../lib/cn'
 
 export function MaterialDetailPage() {
   const { id } = useParams<{ id: string }>()
   const material = getMaterial(id ?? '')
-  const [activeSection, setActiveSection] = useState(0)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const requestedSectionId = searchParams.get('section')
+  const requestedReviewId = searchParams.get('review')
+  const requestedIndex = material?.sections.findIndex((s) => s.id === requestedSectionId) ?? -1
+  const activeSection = requestedIndex >= 0 ? requestedIndex : 0
+  const [expandedSectionId, setExpandedSectionId] = useState<string | null>(null)
   const [showModes, setShowModes] = useState(false)
+  const [selectedGlossaryTerm, setSelectedGlossaryTerm] = useState<GlossaryTerm | null>(null)
+  const [audioHighlight, setAudioHighlight] = useState<(AudioHighlightRange & { source: string }) | null>(null)
+  const articleRef = useRef<HTMLElement>(null)
   const {
-    learningMode,
-    audioEnabled,
+    learningModes,
+    fontSize,
+    lineHeight,
+    letterSpacing,
     lessonProgress,
     toggleLessonComplete,
     toggleBookmark,
@@ -33,10 +50,30 @@ export function MaterialDetailPage() {
   } = useStore()
 
   const section = material?.sections[activeSection]
+  const reviewQuestionId = material?.quiz.some((question) => question.id === requestedReviewId)
+    ? requestedReviewId ?? undefined
+    : undefined
 
   useEffect(() => {
     if (section) accessLesson(section.id)
   }, [section, accessLesson])
+
+  const selectSection = (index: number) => {
+    if (!material) return
+
+    const nextSearchParams = new URLSearchParams(searchParams)
+    nextSearchParams.set('section', material.sections[index].id)
+    if (index !== material.sections.length - 1) nextSearchParams.delete('review')
+    setSearchParams(nextSearchParams, { replace: true })
+
+    if (window.matchMedia('(max-width: 1023px)').matches) {
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      articleRef.current?.scrollIntoView({
+        behavior: reducedMotion ? 'auto' : 'smooth',
+        block: 'start',
+      })
+    }
+  }
 
   if (!material || !section) {
     return (
@@ -56,11 +93,38 @@ export function MaterialDetailPage() {
   const doneSections = material.sections.filter((s) => lessonProgress[s.id]?.completed).length
   const overallPct = Math.round((doneSections / material.sections.length) * 100)
 
-  const isFocus = learningMode === 'focus'
-  const isSimple = learningMode === 'simple'
-  const isAudio = learningMode === 'audio' || audioEnabled
+  const isFocus = learningModes.includes('focus')
+  const isSimple = learningModes.includes('simple')
+  const isAudio = learningModes.includes('audio')
+  const showFullExplanation = isSimple && expandedSectionId === section.id
 
-  const audioText = section.paragraphs.join('. ')
+  const spokenSegments = isSimple && !showFullExplanation
+    ? [section.simpleSummary, ...section.keyPoints]
+    : section.paragraphs
+  const audioText = spokenSegments.join(' ')
+  const activeHighlight = audioHighlight?.source === audioText ? audioHighlight : null
+
+  const renderSpokenText = (text: string, segmentIndex: number) => {
+    const glossaryText = (value: string) => (
+      <GlossaryText text={value} terms={material.glossary} onSelect={setSelectedGlossaryTerm} />
+    )
+    if (!activeHighlight) return glossaryText(text)
+
+    const segmentStart = spokenSegments
+      .slice(0, segmentIndex)
+      .reduce((offset, segment) => offset + segment.length + 1, 0)
+    const start = Math.max(0, activeHighlight.start - segmentStart)
+    const end = Math.min(text.length, activeHighlight.end - segmentStart)
+    if (start >= end) return glossaryText(text)
+
+    return (
+      <>
+        {glossaryText(text.slice(0, start))}
+        <mark className="audio-word-highlight">{text.slice(start, end)}</mark>
+        {glossaryText(text.slice(end))}
+      </>
+    )
+  }
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 py-6">
@@ -76,9 +140,19 @@ export function MaterialDetailPage() {
         <span className="text-sm text-text-primary font-medium truncate">{material.title}</span>
       </div>
 
+      <details data-scroll-reveal className="mb-6 rounded-xl border border-border bg-surface">
+        <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3">
+          <span className="font-semibold text-sm text-text-primary">Ruang Baca Adaptif</span>
+          <span className="text-xs text-text-muted">Ukuran, jarak, dan tema</span>
+        </summary>
+        <div className="border-t border-border p-4 sm:p-5">
+          <ReadingStudio compact />
+        </div>
+      </details>
+
       <div className={cn('grid gap-6', isFocus ? '' : 'lg:grid-cols-[280px_1fr]')}>
         {!isFocus && (
-          <aside className="space-y-4 focus-hide" aria-label="Daftar bagian">
+          <aside data-scroll-reveal className="order-2 space-y-4 focus-hide lg:order-1" aria-label="Daftar bagian">
             <div className="rounded-xl border border-border bg-surface p-4">
               <h2 className="font-semibold text-sm text-text-primary mb-1">{material.title}</h2>
               <div className="flex items-center gap-2 text-xs text-text-muted mb-3">
@@ -96,7 +170,7 @@ export function MaterialDetailPage() {
                 return (
                   <button
                     key={s.id}
-                    onClick={() => setActiveSection(i)}
+                    onClick={() => selectSection(i)}
                     className={cn(
                       'flex items-center gap-2 w-full px-4 py-3 text-left text-sm transition-colors border-b border-border last:border-b-0 cursor-pointer',
                       active
@@ -134,14 +208,23 @@ export function MaterialDetailPage() {
               </button>
               {showModes && (
                 <div className="mt-3">
-                  <ModeSelector compact />
+                  <ModeSelector compact stacked />
                 </div>
               )}
             </div>
           </aside>
         )}
 
-        <article className="min-w-0">
+        <article
+          ref={articleRef}
+          data-scroll-reveal
+          className="reading-content order-1 min-w-0 scroll-mt-20 lg:order-2"
+          style={{
+            '--reader-font-size': `${fontSize}px`,
+            '--reader-line-height': lineHeight,
+            '--reader-letter-spacing': `${letterSpacing}em`,
+          } as CSSProperties}
+        >
           <div className="rounded-2xl border border-border bg-surface p-6 sm:p-8">
             <div className="flex items-start justify-between gap-4 mb-6">
               <div>
@@ -166,7 +249,14 @@ export function MaterialDetailPage() {
               </button>
             </div>
 
-            {isAudio && <AudioPlayer text={audioText} className="mb-6" />}
+            {isAudio && (
+              <AudioPlayer
+                key={`${section.id}-${isSimple && !showFullExplanation ? 'simple' : 'full'}`}
+                text={audioText}
+                onHighlightChange={(range) => setAudioHighlight(range ? { ...range, source: audioText } : null)}
+                className="mb-6"
+              />
+            )}
 
             {isFocus && (
               <div className="mb-4">
@@ -180,25 +270,46 @@ export function MaterialDetailPage() {
                   <div className="rounded-xl bg-primary-50 border border-primary-100 p-5">
                     <div className="flex items-center gap-2 mb-3">
                       <ListChecks size={18} className="text-primary-600" weight="bold" />
-                      <h3 className="font-semibold text-primary-800 text-sm">Poin Penting</h3>
+                      <h3 className="font-semibold text-primary-800 text-sm">Ringkasan</h3>
                     </div>
+                    <p className="mb-4 text-sm leading-relaxed text-text-primary">
+                      {renderSpokenText(section.simpleSummary, 0)}
+                    </p>
+                    <h4 className="mb-2 font-semibold text-primary-800 text-sm">Poin utama</h4>
                     <ul className="space-y-2">
                       {section.keyPoints.map((kp, i) => (
                         <li key={i} className="flex items-start gap-2 text-sm text-text-primary">
                           <CheckCircle size={16} className="text-primary-500 shrink-0 mt-0.5" weight="bold" />
-                          {kp}
+                          {renderSpokenText(kp, i + 1)}
                         </li>
                       ))}
                     </ul>
                   </div>
-                  {section.paragraphs.map((p, i) => (
-                    <p key={i} className="text-sm text-text-secondary leading-relaxed">{p}</p>
-                  ))}
+                  <button
+                    type="button"
+                    onClick={() => setExpandedSectionId(showFullExplanation ? null : section.id)}
+                    aria-expanded={showFullExplanation}
+                    className="text-sm font-semibold text-primary-700 underline underline-offset-4 hover:text-primary-800"
+                  >
+                    {showFullExplanation ? 'Sembunyikan penjelasan lengkap' : 'Baca penjelasan lengkap'}
+                  </button>
+                  {showFullExplanation && (
+                    <div className="space-y-4">
+                      <h3 className="font-semibold text-sm text-text-primary">Penjelasan lengkap</h3>
+                      {section.paragraphs.map((p, i) => (
+                        <p key={i} className="text-sm text-text-secondary leading-relaxed">
+                          {renderSpokenText(p, i)}
+                        </p>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="space-y-4">
                   {section.paragraphs.map((p, i) => (
-                    <p key={i} className="text-text-secondary leading-relaxed">{p}</p>
+                    <p key={i} className="text-text-secondary leading-relaxed">
+                      {renderSpokenText(p, i)}
+                    </p>
                   ))}
                   <div className="rounded-xl bg-surface-elevated border border-border p-5 mt-6">
                     <h3 className="font-semibold text-sm text-text-primary mb-3">Poin Penting</h3>
@@ -228,7 +339,7 @@ export function MaterialDetailPage() {
               {activeSection < material.sections.length - 1 && (
                 <Button
                   variant="outline"
-                  onClick={() => setActiveSection((p) => p + 1)}
+                  onClick={() => selectSection(activeSection + 1)}
                 >
                   Bagian Berikutnya
                 </Button>
@@ -237,15 +348,27 @@ export function MaterialDetailPage() {
               {activeSection > 0 && (
                 <Button
                   variant="ghost"
-                  onClick={() => setActiveSection((p) => p - 1)}
+                  onClick={() => selectSection(activeSection - 1)}
                 >
                   Sebelumnya
                 </Button>
               )}
             </div>
+
+            {activeSection === material.sections.length - 1 && (
+              <MiniQuiz
+                key={reviewQuestionId ?? 'all-questions'}
+                questions={material.quiz}
+                reviewQuestionId={reviewQuestionId}
+              />
+            )}
           </div>
         </article>
       </div>
+      <GlossaryPopover
+        term={selectedGlossaryTerm}
+        onClose={() => setSelectedGlossaryTerm(null)}
+      />
     </div>
   )
 }

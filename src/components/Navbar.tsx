@@ -2,6 +2,7 @@ import { Link, useLocation } from 'react-router-dom'
 import {
   House,
   Compass,
+  BookmarkSimple,
   ChartBar,
   User,
   GearSix,
@@ -11,11 +12,12 @@ import {
 import { useState } from 'react'
 import { cn } from '../lib/cn'
 import { useStore } from '../store'
-import { getMode } from '../data/modes'
+import { getModeSummary } from '../data/modes'
 
 const nav = [
   { to: '/dashboard', label: 'Beranda', icon: House },
   { to: '/materials', label: 'Materi', icon: Compass },
+  { to: '/bookmarks', label: 'Bookmark', icon: BookmarkSimple },
   { to: '/progress', label: 'Progres', icon: ChartBar },
   { to: '/settings', label: 'Pengaturan', icon: GearSix },
   { to: '/profile', label: 'Profil', icon: User },
@@ -24,13 +26,13 @@ const nav = [
 export function Navbar() {
   const { pathname } = useLocation()
   const [open, setOpen] = useState(false)
-  const { learningMode } = useStore()
-  const mode = getMode(learningMode)
+  const { learningModes, pageTheme } = useStore()
+  const preferenceSummary = getModeSummary(learningModes, pageTheme)
 
   return (
     <>
       <nav
-        className="sticky top-0 z-40 border-b border-border bg-surface/80 backdrop-blur-lg focus-hide"
+        className="sticky top-0 z-40 border-b border-border bg-surface/80 backdrop-blur-lg"
         aria-label="Navigasi utama"
       >
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
@@ -65,8 +67,12 @@ export function Navbar() {
           </div>
 
           <div className="flex items-center gap-3">
-            <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-surface-muted px-3 py-1.5 text-xs font-medium text-text-secondary">
-              Mode: {mode.name}
+            <span
+              className="hidden max-w-48 truncate rounded-full bg-surface-muted px-3 py-1.5 text-xs font-medium text-text-secondary lg:inline-flex"
+              aria-label={`Preferensi aktif: ${preferenceSummary}`}
+              title={`Preferensi aktif: ${preferenceSummary}`}
+            >
+              {preferenceSummary}
             </span>
             <button
               className="md:hidden flex h-9 w-9 items-center justify-center rounded-lg hover:bg-surface-muted transition-colors cursor-pointer"
@@ -105,7 +111,7 @@ export function Navbar() {
       </nav>
 
       <div
-        className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-surface/90 backdrop-blur-lg md:hidden focus-hide"
+        className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-surface/90 backdrop-blur-lg md:hidden"
         role="navigation"
         aria-label="Navigasi mobile"
       >

@@ -18,14 +18,14 @@ export function ProgressPage() {
       <h1 className="text-2xl sm:text-3xl font-bold text-text-primary mb-2">Progres Belajar</h1>
       <p className="text-text-secondary mb-8">Pantau perkembangan belajarmu.</p>
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div data-scroll-reveal className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {[
           { icon: TrendUp, label: 'Progres', value: `${overallPct}%`, color: 'text-primary-600', bg: 'bg-primary-100' },
           { icon: CheckCircle, label: 'Selesai', value: `${completedCount}/${totalLessons}`, color: 'text-green-600', bg: 'bg-green-100' },
           { icon: BookmarkSimple, label: 'Ditandai', value: String(bookmarkedCount), color: 'text-accent-600', bg: 'bg-accent-100' },
           { icon: Clock, label: 'Diakses', value: String(accessedCount), color: 'text-blue-600', bg: 'bg-blue-100' },
         ].map((s) => (
-          <Card key={s.label}>
+          <Card key={s.label} scrollReveal>
             <CardBody className="flex items-center gap-4">
               <div className={`flex h-11 w-11 items-center justify-center rounded-xl ${s.bg} ${s.color}`}>
                 <s.icon size={22} weight="bold" />
@@ -39,7 +39,7 @@ export function ProgressPage() {
         ))}
       </div>
 
-      <Card className="mb-8">
+      <Card scrollReveal className="mb-8">
         <CardBody>
           <h2 className="font-semibold text-text-primary mb-3 flex items-center gap-2">
             <Trophy size={18} className="text-accent-500" weight="bold" />
@@ -58,12 +58,12 @@ export function ProgressPage() {
       </Card>
 
       <h2 className="text-lg font-bold text-text-primary mb-4">Detail per Materi</h2>
-      <div className="space-y-4">
+      <div className="space-y-4" data-scroll-reveal>
         {materials.map((m) => {
           const done = m.sections.filter((s) => lessonProgress[s.id]?.completed).length
           const pct = Math.round((done / m.sections.length) * 100)
           return (
-            <Card key={m.id}>
+            <Card key={m.id} scrollReveal>
               <CardBody>
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">

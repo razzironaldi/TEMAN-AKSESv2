@@ -6,7 +6,6 @@ import {
   CircleHalf,
   Check,
 } from '@phosphor-icons/react'
-import type { LearningMode } from '../store'
 import { useStore } from '../store'
 import { learningModes } from '../data/modes'
 import { cn } from '../lib/cn'
@@ -21,26 +20,33 @@ const iconMap: Record<string, React.ComponentType<{ size?: number; weight?: 'lig
 
 interface ModeSelectorProps {
   compact?: boolean
+  stacked?: boolean
 }
 
-export function ModeSelector({ compact }: ModeSelectorProps) {
-  const { learningMode, setLearningMode } = useStore()
+export function ModeSelector({ compact, stacked }: ModeSelectorProps) {
+  const { learningModes: selectedModes, toggleLearningMode, clearLearningModes } = useStore()
 
   return (
     <div
-      className={cn('grid gap-3', compact ? 'grid-cols-2 sm:grid-cols-3' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3')}
-      role="radiogroup"
-      aria-label="Pilih mode belajar"
+      className={cn(
+        'grid gap-3',
+        stacked
+          ? 'grid-cols-1'
+          : compact
+          ? 'grid-cols-2 sm:grid-cols-3'
+          : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
+      )}
+      role="group"
+      aria-label="Preferensi belajar, bisa memilih lebih dari satu"
     >
       {learningModes.map((mode) => {
-        const active = learningMode === mode.id
+        const active = mode.id === 'visual' ? selectedModes.length === 0 : selectedModes.includes(mode.id)
         const Icon = iconMap[mode.icon]
         return (
           <button
             key={mode.id}
-            role="radio"
-            aria-checked={active}
-            onClick={() => setLearningMode(mode.id as LearningMode)}
+            aria-pressed={active}
+            onClick={() => mode.id === 'visual' ? clearLearningModes() : toggleLearningMode(mode.id)}
             className={cn(
               'relative flex items-start gap-3 rounded-xl border p-4 text-left transition-all duration-200 cursor-pointer',
               active

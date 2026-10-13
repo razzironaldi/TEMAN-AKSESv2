@@ -4,19 +4,32 @@ import { useStore } from '../store'
 import { cn } from '../lib/cn'
 
 export function Layout() {
-  const { learningMode, textSize, spacingRelaxed } = useStore()
+  const { learningModes, pageTheme, toggleLearningMode } = useStore()
 
   return (
     <div
       className={cn(
-        learningMode === 'high-contrast' && 'high-contrast',
-        learningMode === 'focus' && 'focus-mode',
-        textSize === 'large' && 'text-size-large',
-        textSize === 'extra-large' && 'text-size-extra-large',
-        spacingRelaxed && 'spacing-relaxed'
+        pageTheme === 'high-contrast' && 'high-contrast',
+        pageTheme === 'soft' && 'reading-theme-soft',
+        learningModes.includes('focus') && 'focus-mode'
       )}
     >
       <Navbar />
+      {learningModes.includes('focus') && (
+        <div
+          className="flex items-center justify-center gap-3 border-b border-primary-200 bg-primary-50 px-4 py-2 text-xs text-primary-900"
+          role="status"
+        >
+          <span>Mode Fokus aktif</span>
+          <button
+            type="button"
+            onClick={() => toggleLearningMode('focus')}
+            className="font-semibold underline underline-offset-2 hover:text-primary-700"
+          >
+            Matikan Fokus
+          </button>
+        </div>
+      )}
       <main className="min-h-[calc(100dvh-4rem)] pb-20 md:pb-0">
         <Outlet />
       </main>

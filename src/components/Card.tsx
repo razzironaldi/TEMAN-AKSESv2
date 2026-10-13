@@ -6,11 +6,13 @@ interface CardProps {
   className?: string
   as?: 'div' | 'article' | 'section'
   interactive?: boolean
+  scrollReveal?: boolean
 }
 
-export function Card({ children, className, as: Tag = 'div', interactive }: CardProps) {
+export function Card({ children, className, as: Tag = 'div', interactive, scrollReveal = false }: CardProps) {
   return (
     <Tag
+      data-scroll-reveal={scrollReveal ? '' : undefined}
       className={cn(
         'rounded-2xl bg-surface border border-border shadow-soft',
         interactive &&
