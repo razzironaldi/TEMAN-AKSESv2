@@ -10,7 +10,7 @@ TemanAkses adalah prototipe platform belajar adaptif berbahasa Indonesia, dibuat
 
 Platform ini membantu pelajar mengatur cara membaca dan berinteraksi dengan materi. Prinsip produknya sejalan dengan pendidikan inklusif dan Universal Design for Learning (UDL): sediakan berbagai cara untuk memahami informasi dan berpartisipasi, tanpa mengasumsikan semua pengguna memiliki kebutuhan yang sama.
 
-**Kondisi saat ini:** aplikasi dengan materi statis dan penyimpanan per browser. Belum ada akun atau sinkronisasi perangkat. Server Node dapat menyajikan frontend sekaligus proxy Groq untuk deployment prototipe; backend produksi yang hardened belum tersedia.
+**Kondisi saat ini:** aplikasi dengan materi statis dan penyimpanan per browser. Belum ada akun atau sinkronisasi perangkat. Server Node menyajikan frontend sekaligus proxy Gemini API untuk deployment prototipe; backend produksi yang hardened belum tersedia.
 
 ## Prinsip Produk dan UX
 
@@ -55,7 +55,7 @@ Platform ini membantu pelajar mengatur cara membaca dan berinteraksi dengan mate
 ### Teman belajar Aksa
 
 - Karakter animasi Aksa tersedia di halaman belajar dan membuka panel tanya-jawab.
-- Jika server dan `GROQ_API_KEY` tersedia, pertanyaan dan konteks bagian aktif dikirim ke Groq untuk dijawab. Jangan masukkan kata sandi atau informasi pribadi.
+- Jika server dan `GEMINI_API_KEY` tersedia, pertanyaan dan konteks bagian aktif dikirim ke Gemini untuk dijawab. Jangan masukkan kata sandi atau informasi pribadi.
 - Di luar halaman materi, Aksa mencari subtema yang paling relevan dan mengirim ringkasan serta detailnya sebagai konteks jawaban.
 - Kunci API disimpan di `.env.local` dan hanya dibaca server Node lokal; jangan pernah menaruhnya pada source frontend atau mengunggahnya ke Git.
 - Tanpa koneksi AI, Aksa memakai pencocokan lokal dari ringkasan, istilah, dan kuis di `src/data/materials.ts`.
@@ -84,9 +84,9 @@ Platform ini membantu pelajar mengatur cara membaca dan berinteraksi dengan mate
 - Zustand 5 dengan persist localStorage
 - Phosphor Icons
 - Web Speech API bawaan browser
-- Node.js HTTP server untuk proxy Groq lokal (opsional saat pengembangan)
+- Node.js HTTP server untuk proxy Gemini API (lokal dan deployment prototipe)
 
-Penyimpanan progres berlangsung di browser. Server Node melayani frontend dan proxy Groq dalam satu proses saat deployment prototipe; belum ada akun atau sinkronisasi.
+Penyimpanan progres berlangsung di browser. Server Node melayani frontend dan proxy Gemini dalam satu proses saat deployment prototipe; belum ada akun atau sinkronisasi.
 
 ## Mulai Mencoba
 
@@ -97,15 +97,15 @@ npm install
 npm run dev
 ```
 
-Mode jawaban lokal Aksa tersedia tanpa konfigurasi tambahan. Setup Groq untuk prototipe dan perintah validasi pengembang dijelaskan di [HANDOFF.md](HANDOFF.md).
+Mode jawaban lokal Aksa tersedia tanpa konfigurasi tambahan. Setup Gemini untuk prototipe dan perintah validasi pengembang dijelaskan di [HANDOFF.md](HANDOFF.md).
 
 ## Deploy Prototipe
 
-Konfigurasi [railway.json](railway.json) menetapkan `npm run build`, `npm start`, dan healthcheck API. Tambahkan `GROQ_API_KEY` pada Variables service Railway; `GROQ_MODEL` bersifat opsional. Setelah deploy, tanpa variable server tersebut aplikasi tetap terbuka tetapi Aksa hanya memakai jawaban lokal.
+Konfigurasi [railway.json](railway.json) menetapkan `npm run build`, `npm start`, dan healthcheck API. Tambahkan `GEMINI_API_KEY` pada Variables service Railway; `GEMINI_MODEL` bersifat opsional. Setelah deploy, tanpa variable server tersebut aplikasi tetap terbuka tetapi Aksa hanya memakai jawaban lokal.
 
 ## Status
 
-TemanAkses adalah prototipe untuk kompetisi desain web. Materi masih statis dan katalog belum memiliki editor konten. Aksa dapat memakai Groq secara opsional; jawabannya dapat keliru dan pertanyaan hanya dikirim ke Groq ketika server lokal dikonfigurasi. Progres lokal belum tersinkron antarperangkat.
+TemanAkses adalah prototipe untuk kompetisi desain web. Materi masih statis dan katalog belum memiliki editor konten. Aksa dapat memakai Gemini secara opsional; jawabannya dapat keliru dan pertanyaan dikirim ke Google hanya ketika API key dikonfigurasi. Progres lokal belum tersinkron antarperangkat.
 
 Konten inklusif, ringkasan, latihan, dan pengalaman aksesibilitas masih perlu ditinjau serta diuji bersama pendidik dan pelajar dengan kebutuhan yang beragam. Catatan batasan teknis lengkap tersedia di [HANDOFF.md](HANDOFF.md).
 

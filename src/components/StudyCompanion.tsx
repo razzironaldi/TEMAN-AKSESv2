@@ -11,7 +11,7 @@ interface Message {
 
 const openingMessage: Message = {
   role: 'companion',
-  text: 'Hai! Aku Aksa, teman belajarmu. Saat AI aktif, pertanyaan dan konteks materi dikirim ke Groq untuk dijawab. Jangan kirim kata sandi atau informasi pribadi.',
+  text: 'Hai! Aku Aksa, teman belajarmu. Saat AI aktif, pertanyaan dan konteks materi dikirim ke Gemini untuk dijawab. Jangan kirim kata sandi atau informasi pribadi.',
 }
 
 const stopWords = new Set([
@@ -122,8 +122,8 @@ function createAnswer(question: string, activeMaterial: Material | undefined, ac
 
 function getAiSetupMessage() {
   return import.meta.env.DEV
-    ? 'Untuk mengaktifkan AI, isi GROQ_API_KEY di .env.local lalu jalankan server API.'
-    : 'AI belum diaktifkan di server deployment ini. Pengelola perlu mengatur GROQ_API_KEY pada environment server.'
+    ? 'Untuk mengaktifkan AI, isi GEMINI_API_KEY di .env.local lalu jalankan server API.'
+    : 'AI belum diaktifkan di server deployment ini. Pengelola perlu mengatur GEMINI_API_KEY pada environment server.'
 }
 
 function CompanionAvatar({ listening = false }: { listening?: boolean }) {
@@ -280,7 +280,7 @@ export function StudyCompanion() {
             <div className="min-w-0 flex-1">
               <h2 className="text-sm font-bold text-text-primary">Aksa</h2>
               <p className="text-xs text-text-secondary">
-                {aiConfigured === null ? 'Memeriksa koneksi AI...' : aiConfigured ? 'AI Groq aktif' : 'Mode lokal'}
+                {aiConfigured === null ? 'Memeriksa koneksi AI...' : aiConfigured ? 'AI Gemini aktif' : 'Mode lokal'}
               </p>
             </div>
             <button
