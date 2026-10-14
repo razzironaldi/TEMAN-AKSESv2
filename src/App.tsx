@@ -1,16 +1,25 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import { useEffect } from 'react'
+import { useEffect, Suspense, lazy } from 'react'
 import { useLocation } from 'react-router-dom'
 import { Layout } from './components/Layout'
-import { LandingPage } from './pages/LandingPage'
-import { OnboardingPage } from './pages/OnboardingPage'
-import { DashboardPage } from './pages/DashboardPage'
-import { MaterialsListPage } from './pages/MaterialsListPage'
-import { MaterialDetailPage } from './pages/MaterialDetailPage'
-import { ProgressPage } from './pages/ProgressPage'
-import { SettingsPage } from './pages/SettingsPage'
-import { ProfilePage } from './pages/ProfilePage'
-import { BookmarksPage } from './pages/BookmarksPage'
+
+const LandingPage = lazy(() => import('./pages/LandingPage').then(m => ({ default: m.LandingPage })))
+const OnboardingPage = lazy(() => import('./pages/OnboardingPage').then(m => ({ default: m.OnboardingPage })))
+const DashboardPage = lazy(() => import('./pages/DashboardPage').then(m => ({ default: m.DashboardPage })))
+const MaterialsListPage = lazy(() => import('./pages/MaterialsListPage').then(m => ({ default: m.MaterialsListPage })))
+const MaterialDetailPage = lazy(() => import('./pages/MaterialDetailPage').then(m => ({ default: m.MaterialDetailPage })))
+const ProgressPage = lazy(() => import('./pages/ProgressPage').then(m => ({ default: m.ProgressPage })))
+const SettingsPage = lazy(() => import('./pages/SettingsPage').then(m => ({ default: m.SettingsPage })))
+const ProfilePage = lazy(() => import('./pages/ProfilePage').then(m => ({ default: m.ProfilePage })))
+const BookmarksPage = lazy(() => import('./pages/BookmarksPage').then(m => ({ default: m.BookmarksPage })))
+
+function LoadingFallback() {
+  return (
+    <div className="flex min-h-[60vh] items-center justify-center">
+      <div className="h-8 w-8 animate-spin rounded-full border-3 border-primary-600 border-t-transparent" aria-label="Memuat halaman..." />
+    </div>
+  )
+}
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -54,20 +63,22 @@ function RouteContent() {
 
   return (
     <div key={pathname} className="route-transition">
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/onboarding" element={<OnboardingPage />} />
-        <Route element={<Layout />}>
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/materials" element={<MaterialsListPage />} />
-          <Route path="/materials/:id" element={<MaterialDetailPage />} />
-          <Route path="/bookmarks" element={<BookmarksPage />} />
-          <Route path="/progress" element={<ProgressPage />} />
-          <Route path="/settings" element={<SettingsPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-        </Route>
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+      <Suspense fallback={<LoadingFallback />}>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/onboarding" element={<OnboardingPage />} />
+          <Route element={<Layout />}>
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/materials" element={<MaterialsListPage />} />
+            <Route path="/materials/:id" element={<MaterialDetailPage />} />
+            <Route path="/bookmarks" element={<BookmarksPage />} />
+            <Route path="/progress" element={<ProgressPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+          </Route>
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Suspense>
     </div>
   )
 }

@@ -630,3 +630,13 @@ body {
     animation-play-state: running !important;
   }
 }
+
+/* Class untuk mematikan animasi karakter (QuizMascot, Aksa avatar) via user toggle di Settings.
+   Diterapkan ke <html> atau <body> via Layout.tsx */
+.no-character-animations .quiz-mascot-character,
+.no-character-animations .companion-avatar,
+.no-character-animations .quiz-mascot-character *,
+.no-character-animations .companion-avatar * {
+  animation: none !important;
+  transition: none !important;
+}

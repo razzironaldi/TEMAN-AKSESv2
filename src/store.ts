@@ -36,6 +36,9 @@ interface AppState {
   currentQuestionIndex: number
   score: number
   mascotState: MascotState
+  /* Toggle untuk animasi karakter (QuizMascot, Aksa avatar).
+     Default true. Jika false, animasi karakter dihentikan via CSS class. */
+  characterAnimationsEnabled: boolean
 
   toggleLearningMode: (mode: LearningMode) => void
   clearLearningModes: () => void
@@ -57,6 +60,7 @@ interface AppState {
   finishQuizSession: () => void
   resetQuizSession: () => void
   resetPreferences: () => void
+  setCharacterAnimationsEnabled: (enabled: boolean) => void
 }
 
 const defaultState = {
@@ -74,6 +78,7 @@ const defaultState = {
   currentQuestionIndex: 0,
   score: 0,
   mascotState: 'idle' as MascotState,
+  characterAnimationsEnabled: true,
 }
 
 type LegacyTextSize = 'normal' | 'large' | 'extra-large'
@@ -184,6 +189,7 @@ export const useStore = create<AppState>()(
       setMascotState: (mascotState) => set({ mascotState }),
       finishQuizSession: () => set({ isQuizActive: false }),
       resetQuizSession: () => set({ isQuizActive: false, currentQuestionIndex: 0, score: 0, mascotState: 'idle' }),
+      setCharacterAnimationsEnabled: (characterAnimationsEnabled) => set({ characterAnimationsEnabled }),
 
       resetPreferences: () =>
         set((s) => ({
@@ -196,7 +202,7 @@ export const useStore = create<AppState>()(
     }),
     {
       name: 'temanakses-storage',
-      version: 3,
+      version: 4,
       partialize: ({
         isQuizActive: _isQuizActive,
         quizMode: _quizMode,
@@ -207,7 +213,7 @@ export const useStore = create<AppState>()(
       }) => persisted,
       migrate: (persistedState, version) => {
         const saved = (persistedState ?? {}) as PersistedAppState
-        if (version >= 2) return { ...defaultState, ...saved } as AppState
+        if (version >= 3) return { ...defaultState, ...saved } as AppState
 
         const {
           learningMode: legacyMode,

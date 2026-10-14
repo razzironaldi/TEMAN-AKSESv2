@@ -5,7 +5,7 @@ import { cn } from '../lib/cn'
 import { StudyCompanion } from './StudyCompanion'
 
 export function Layout() {
-  const { learningModes, pageTheme, toggleLearningMode } = useStore()
+  const { learningModes, pageTheme, toggleLearningMode, characterAnimationsEnabled } = useStore()
   const isQuizActive = useStore((state) => state.isQuizActive)
 
   return (
@@ -13,7 +13,8 @@ export function Layout() {
       className={cn(
         pageTheme === 'high-contrast' && 'high-contrast',
         pageTheme === 'soft' && 'reading-theme-soft',
-        learningModes.includes('focus') && 'focus-mode'
+        learningModes.includes('focus') && 'focus-mode',
+        !characterAnimationsEnabled && 'no-character-animations'
       )}
     >
       <Navbar />
