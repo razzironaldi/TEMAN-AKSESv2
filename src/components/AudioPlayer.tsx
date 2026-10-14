@@ -25,6 +25,9 @@ export function AudioPlayer({ text, onHighlightChange, className }: AudioPlayerP
     typeof SpeechSynthesisUtterance !== 'undefined'
   const fallbackMessage = 'Audio tidak tersedia di browser ini. Kamu tetap bisa membaca materi.'
 
+  /* Feature detect onboundary support (tidak ada di Safari iOS) */
+  const supportsBoundary = speechSupported && 'onboundary' in SpeechSynthesisUtterance.prototype
+
   useEffect(() => {
     return () => {
       if (typeof window !== 'undefined' && typeof window.speechSynthesis !== 'undefined') {
@@ -65,13 +68,33 @@ export function AudioPlayer({ text, onHighlightChange, className }: AudioPlayerP
         setError('Audio gagal diputar. Coba lagi atau baca materinya.')
       }
     }
-    u.onboundary = (event) => {
-      if (utteranceRef.current !== u || event.name !== 'word') return
 
-      const start = event.charIndex
-      const word = text.slice(start).match(/^\S+/u)?.[0]
-      const end = start + (event.charLength || word?.length || 1)
-      onHighlightChange?.({ start, end })
+    if (supportsBoundary) {
+      u.onboundary = (event) => {
+        if (utteranceRef.current !== u || event.name !== 'word') return
+
+        const start = event.charIndex
+        const word = text.slice(start).match(/^\S+/u)?.[0]
+        const end = start + (event.charLength || word?.length || 1)
+        onHighlightChange?.({ start, end })
+      }
+    } else {
+      /* Fallback untuk Safari: highlight per kalimat secara berkala */
+      const sentences = text.split(/(?<=[.!?])\s+/u).filter(Boolean)
+      let charIndex = 0
+      const sentenceDuration = 3000 / Math.max(sentences.length, 1) // ~3 detik total estimate
+
+      sentences.forEach((sentence, i) => {
+        const sentenceStart = charIndex
+        const sentenceEnd = charIndex + sentence.length
+        charIndex = sentenceEnd + 1 // +1 untuk spasi
+
+        setTimeout(() => {
+          if (utteranceRef.current === u && playing) {
+            onHighlightChange?.({ start: sentenceStart, end: sentenceEnd })
+          }
+        }, i * sentenceDuration)
+      })
     }
 
     try {
@@ -83,7 +106,7 @@ export function AudioPlayer({ text, onHighlightChange, className }: AudioPlayerP
       setPaused(false)
       setError('Audio gagal diputar. Coba lagi atau baca materinya.')
     }
-  }, [fallbackMessage, onHighlightChange, rate, speechSupported, text])
+  }, [fallbackMessage, onHighlightChange, rate, speechSupported, text, supportsBoundary, playing])
 
   const togglePause = useCallback(() => {
     try {

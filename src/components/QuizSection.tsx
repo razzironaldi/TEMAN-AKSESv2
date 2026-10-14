@@ -194,10 +194,44 @@ export function QuizSection({ questions, reviewQuestionId }: QuizSectionProps) {
 
   if (!question) return null
 
+  // Dialog polyfill for iOS < 15.4 (inline minimal polyfill)
+  useEffect(() => {
+    const dialog = dialogRef.current
+    if (!dialog || typeof HTMLDialogElement.prototype.showModal === 'function') return
+
+    // Minimal polyfill: add showModal/close methods if missing
+    if (!dialog.showModal) {
+      dialog.showModal = function() {
+        this.setAttribute('open', '')
+        this.style.display = 'flex'
+        document.body.style.overflow = 'hidden'
+      }
+    }
+    if (!dialog.close) {
+      dialog.close = function() {
+        this.removeAttribute('open')
+        this.style.display = 'none'
+        document.body.style.overflow = ''
+      }
+    }
+    // Polyfill ::backdrop via pseudo-element simulation
+    const style = document.createElement('style')
+    style.textContent = `
+      dialog[open]::backdrop {
+        background: rgb(15 23 42 / 48%);
+        backdrop-filter: blur(2px);
+      }
+    `
+    document.head.appendChild(style)
+    return () => {
+      document.head.removeChild(style)
+    }
+  }, [])
+
   return (
     <dialog
       ref={dialogRef}
-      className="fixed inset-0 m-0 h-[100dvh] max-h-none w-screen max-w-none overflow-y-auto border-0 bg-surface p-0 text-text-primary backdrop:bg-surface"
+      className="fixed inset-0 m-0 h-[100vh] h-[100dvh] max-h-none w-screen max-w-none overflow-y-auto border-0 bg-surface p-0 text-text-primary backdrop:bg-surface safe-area-inset-bottom"
       aria-labelledby="active-quiz-title"
       onKeyDownCapture={(event) => {
         if (event.key === 'Escape') {
@@ -205,10 +239,7 @@ export function QuizSection({ questions, reviewQuestionId }: QuizSectionProps) {
           leaveQuiz()
         }
       }}
-      onCancel={(event) => {
-        event.preventDefault()
-        leaveQuiz()
-      }}
+      /* onCancel dihapus: biarkan gesture native (swipe down/back) menutup dialog tanpa preventDefault */
     >
       <div className="mx-auto flex min-h-full w-full max-w-3xl flex-col px-4 py-4 pb-8 sm:px-6 sm:py-7">
         <header className="flex items-center justify-between gap-4 border-b border-border pb-4">

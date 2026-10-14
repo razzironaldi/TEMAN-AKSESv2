@@ -177,6 +177,10 @@ body {
   border-radius: 46% 46% 40% 40%;
   background: var(--color-primary-400);
   box-shadow: inset 0 -0.35rem 0 rgb(3 42 42 / 12%);
+  /* Mobile optimizations: force GPU layer for float/blink animations */
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 .companion-avatar::before {
@@ -240,6 +244,21 @@ body {
   width: 7rem;
   height: 8.25rem;
   flex: 0 0 auto;
+  /* Mobile optimizations: force GPU layer, hint browser for animation */
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Simplify border-radius for mobile to avoid rendering artifacts */
+@media (max-width: 768px) {
+  .quiz-mascot-body {
+    border-radius: 50% 50% 45% 45% / 45% 45% 50% 50%;
+  }
+  .quiz-mascot-arm,
+  .quiz-mascot-leg span {
+    border-radius: 999px;
+  }
 }
 
 .quiz-mascot-shadow {
@@ -594,9 +613,20 @@ body {
     transition: none;
   }
 
-  * {
+  /* Hanya matikan animasi TRANSITION & PAGE (essential), BUKAN animasi karakter delightful.
+     Animasi karakter (QuizMascot, Aksa avatar) dikecualikan agar tetap berjalan di mobile.
+     User yang benar-benar ingin mematikan semua animasi bisa pakai toggle di Settings (future). */
+  *:not(.quiz-mascot-character):not(.companion-avatar):not(.quiz-mascot-character *):not(.companion-avatar *) {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+
+  /* Pastikan animasi karakter tetap running (bukan paused) */
+  .quiz-mascot-character,
+  .companion-avatar,
+  .quiz-mascot-character *,
+  .companion-avatar * {
+    animation-play-state: running !important;
   }
 }

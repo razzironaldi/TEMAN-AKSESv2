@@ -4,6 +4,29 @@ import { useLocation } from 'react-router-dom'
 import { learningCategories, materials, type Material } from '../data/materials'
 import { useStore } from '../store'
 
+/* VisualViewport hook untuk handle virtual keyboard di mobile */
+function useVisualViewport() {
+  const [viewport, setViewport] = useState({ height: 0, offsetTop: 0 })
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.visualViewport) return
+    const vp = window.visualViewport
+    const update = () => setViewport({
+      height: vp.height,
+      offsetTop: vp.offsetTop,
+    })
+    update()
+    vp.addEventListener('resize', update)
+    vp.addEventListener('scroll', update)
+    return () => {
+      vp.removeEventListener('resize', update)
+      vp.removeEventListener('scroll', update)
+    }
+  }, [])
+
+  return viewport
+}
+
 interface Message {
   role: 'companion' | 'learner'
   text: string
@@ -148,6 +171,9 @@ export function StudyCompanion() {
   const inputRef = useRef<HTMLInputElement>(null)
   const messageListRef = useRef<HTMLDivElement>(null)
 
+  /* VisualViewport untuk handle virtual keyboard di mobile */
+  const visualViewport = useVisualViewport()
+
   const activeMaterial = useMemo(() => {
     const materialId = pathname.match(/^\/materials\/([^/]+)/)?.[1]
     return materials.find((material) => material.id === materialId)
@@ -267,8 +293,14 @@ export function StudyCompanion() {
     )
   }
 
+  /* Gunakan visualViewport untuk positioning yang benar saat keyboard buka di mobile */
+  const bottomPosition = visualViewport.height > 0
+    ? visualViewport.offsetTop + visualViewport.height - 100
+    : 84 /* 5.25rem = 84px */
+
   return (
-    <div className="fixed bottom-[5.25rem] right-3 z-50 flex flex-col items-end gap-3 md:bottom-5 md:right-5">
+    <div className="fixed right-3 z-50 flex flex-col items-end gap-3 md:bottom-5 md:right-5"
+         style={{ bottom: `${bottomPosition}px` }}>
       {isOpen && (
         <section
           id="study-companion-panel"
