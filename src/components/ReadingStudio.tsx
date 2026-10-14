@@ -114,7 +114,7 @@ export function ReadingStudio({ compact = false }: ReadingStudioProps) {
                 aria-pressed={active}
                 onClick={() => setPageTheme(theme.id)}
                 className={cn(
-                  'flex min-h-11 items-center justify-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors',
+                  'flex min-h-11 items-center justify-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors min-w-[44px]',
                   active
                     ? 'border-primary-600 bg-primary-50 text-primary-800 ring-1 ring-primary-600'
                     : 'border-border bg-surface text-text-secondary hover:border-primary-400'

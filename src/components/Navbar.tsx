@@ -75,7 +75,7 @@ export function Navbar() {
               {preferenceSummary}
             </span>
             <button
-              className="md:hidden flex h-9 w-9 items-center justify-center rounded-lg hover:bg-surface-muted transition-colors cursor-pointer"
+              className="md:hidden flex h-11 w-11 items-center justify-center rounded-lg hover:bg-surface-muted transition-colors cursor-pointer"
               onClick={() => setOpen(!open)}
               aria-label={open ? 'Tutup menu' : 'Buka menu'}
               aria-expanded={open}
@@ -123,7 +123,7 @@ export function Navbar() {
                 key={n.to}
                 to={n.to}
                 className={cn(
-                  'flex flex-col items-center gap-0.5 px-2 py-1 text-[10px] font-medium transition-colors',
+                  'flex flex-col items-center gap-0.5 px-3 py-2 text-[11px] font-medium transition-colors min-h-[44px] min-w-[44px]',
                   active ? 'text-primary-600' : 'text-text-muted'
                 )}
               >

@@ -16,7 +16,7 @@
 | 6 | AudioPlayer onboundary fallback | ✅ Fixed | `18aa5d9` |
 | 7 | Character animations toggle | ✅ Added | `c2faa95` |
 | 8 | Lazy loading code-split | ✅ Added | `c2faa95` |
-| 9 | Touch target audit | ⏳ Pending | - |
+| 9 | Touch target audit | ✅ Fixed | `c2faa95` |
 
 ---
 

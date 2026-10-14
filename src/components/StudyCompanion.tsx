@@ -285,7 +285,7 @@ export function StudyCompanion() {
       <button
         type="button"
         onClick={() => setIsVisible(true)}
-        className="fixed bottom-20 right-3 z-50 inline-flex min-h-10 items-center gap-2 rounded-full border border-primary-700 bg-white px-3 text-sm font-semibold text-primary-900 shadow-elevated hover:bg-primary-50 focus-visible:outline-offset-4 md:bottom-5 md:right-5"
+        className="fixed bottom-20 right-3 z-50 inline-flex min-h-11 items-center gap-2 rounded-full border border-primary-700 bg-white px-3 text-sm font-semibold text-primary-900 shadow-elevated hover:bg-primary-50 focus-visible:outline-offset-4 md:bottom-5 md:right-5"
       >
         <Eye size={17} aria-hidden="true" />
         Tampilkan Aksa
@@ -318,7 +318,7 @@ export function StudyCompanion() {
             <button
               type="button"
               onClick={() => setIsVisible(false)}
-              className="flex h-9 w-9 items-center justify-center rounded-lg text-text-secondary hover:bg-white focus-visible:outline-offset-2"
+              className="flex h-11 w-11 items-center justify-center rounded-lg text-text-secondary hover:bg-white focus-visible:outline-offset-2"
               aria-label="Sembunyikan Aksa"
               title="Sembunyikan Aksa"
             >
@@ -327,7 +327,7 @@ export function StudyCompanion() {
             <button
               type="button"
               onClick={() => setIsOpen(false)}
-              className="flex h-9 w-9 items-center justify-center rounded-lg text-text-secondary hover:bg-white focus-visible:outline-offset-2"
+              className="flex h-11 w-11 items-center justify-center rounded-lg text-text-secondary hover:bg-white focus-visible:outline-offset-2"
               aria-label="Tutup percakapan"
               title="Tutup percakapan"
             >

@@ -73,6 +73,40 @@ export function QuizSection({ questions, reviewQuestionId }: QuizSectionProps) {
     if (isQuizActive) questionRef.current?.focus()
   }, [currentQuestionIndex, isQuizActive])
 
+  // Dialog polyfill for iOS < 15.4 (inline minimal polyfill) - must be unconditional
+  useEffect(() => {
+    const dialog = dialogRef.current
+    if (!dialog || typeof HTMLDialogElement.prototype.showModal === 'function') return
+
+    // Minimal polyfill: add showModal/close methods if missing
+    if (!dialog.showModal) {
+      dialog.showModal = function() {
+        this.setAttribute('open', '')
+        this.style.display = 'flex'
+        document.body.style.overflow = 'hidden'
+      }
+    }
+    if (!dialog.close) {
+      dialog.close = function() {
+        this.removeAttribute('open')
+        this.style.display = 'none'
+        document.body.style.overflow = ''
+      }
+    }
+    // Polyfill ::backdrop via pseudo-element simulation
+    const style = document.createElement('style')
+    style.textContent = `
+      dialog[open]::backdrop {
+        background: rgb(15 23 42 / 48%);
+        backdrop-filter: blur(2px);
+      }
+    `
+    document.head.appendChild(style)
+    return () => {
+      document.head.removeChild(style)
+    }
+  }, [])
+
   function chooseMode(mode: QuizMode) {
     setQuizMode(mode)
   }
@@ -193,40 +227,6 @@ export function QuizSection({ questions, reviewQuestionId }: QuizSectionProps) {
   }
 
   if (!question) return null
-
-  // Dialog polyfill for iOS < 15.4 (inline minimal polyfill)
-  useEffect(() => {
-    const dialog = dialogRef.current
-    if (!dialog || typeof HTMLDialogElement.prototype.showModal === 'function') return
-
-    // Minimal polyfill: add showModal/close methods if missing
-    if (!dialog.showModal) {
-      dialog.showModal = function() {
-        this.setAttribute('open', '')
-        this.style.display = 'flex'
-        document.body.style.overflow = 'hidden'
-      }
-    }
-    if (!dialog.close) {
-      dialog.close = function() {
-        this.removeAttribute('open')
-        this.style.display = 'none'
-        document.body.style.overflow = ''
-      }
-    }
-    // Polyfill ::backdrop via pseudo-element simulation
-    const style = document.createElement('style')
-    style.textContent = `
-      dialog[open]::backdrop {
-        background: rgb(15 23 42 / 48%);
-        backdrop-filter: blur(2px);
-      }
-    `
-    document.head.appendChild(style)
-    return () => {
-      document.head.removeChild(style)
-    }
-  }, [])
 
   return (
     <dialog

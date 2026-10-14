@@ -56,7 +56,7 @@ export function ModeSelector({ compact, stacked }: ModeSelectorProps) {
           >
             <div
               className={cn(
-                'flex h-10 w-10 shrink-0 items-center justify-center rounded-lg',
+                'flex h-11 w-11 shrink-0 items-center justify-center rounded-lg',
                 active ? 'bg-primary-600 text-white' : 'bg-surface-muted text-text-secondary'
               )}
             >
