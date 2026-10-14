@@ -89,6 +89,21 @@ Hasil:
 
 ---
 
+## Hotfix tambahan: tombol “Periksa jawaban” di mobile
+
+Pada pengujian di viewport mobile, area tombol aksi kuis bisa tertutup di bawah fold saat dialog kuis dibuat dalam layout yang bergantung pada `margin-top: auto` dan tinggi viewport yang berubah saat browser tab aktif/di-background.
+
+### Solusi yang diterapkan
+
+- Footer aksi kuis dipindah menjadi area `sticky` di bagian bawah dialog.
+- Area tombol diberi padding bawah yang memperhitungkan `safe-area-inset-bottom` agar aman di iPhone dan browser mobile modern.
+- Background footer dibuat semi-transparan agar tetap terlihat tanpa tertutup oleh konten scrollable.
+
+### File terlibat
+- `src/components/QuizSection.tsx`
+
+---
+
 ## Catatan akhir
 
-Perbaikan ini fokus pada akar masalah, bukan hanya patch visual. Dengan pendekatan seperti ini, bug yang berkaitan dengan lazy load, viewport mobile, dan observer DOM dapat dicegah kembali di masa depan.
+Perbaikan ini fokus pada akar masalah, bukan hanya patch visual. Dengan pendekatan seperti ini, bug yang berkaitan dengan lazy load, viewport mobile, dialog, dan observer DOM dapat dicegah kembali di masa depan.

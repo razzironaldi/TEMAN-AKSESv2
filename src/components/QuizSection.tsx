@@ -333,28 +333,30 @@ export function QuizSection({ questions, reviewQuestionId }: QuizSectionProps) {
             {answerState === 'idle' && <QuizMascot state={mascotState} />}
           </div>
 
-          <div className="mt-auto flex flex-wrap justify-end gap-3 pt-6">
-            {answerState === 'correct' && (
-              <button type="button" onClick={advance} className="inline-flex min-h-12 items-center gap-2 rounded-lg bg-primary-700 px-5 py-3 text-sm font-bold text-white hover:bg-primary-800 focus-visible:outline-offset-4">
-                {currentQuestionIndex === activeQuestions.length - 1 ? 'Lihat hasil' : 'Soal berikutnya'} <ArrowRight size={18} weight="bold" />
-              </button>
-            )}
-            {(answerState === 'incorrect' && quizMode === 'hard' || answerState === 'timeout') && (
-              <button type="button" onClick={advance} className="inline-flex min-h-12 items-center gap-2 rounded-lg bg-primary-700 px-5 py-3 text-sm font-bold text-white hover:bg-primary-800 focus-visible:outline-offset-4">
-                {currentQuestionIndex === activeQuestions.length - 1 ? 'Lihat hasil' : 'Lanjut soal'} <ArrowRight size={18} weight="bold" />
-              </button>
-            )}
-            {answerState === 'incorrect' && quizMode === 'santai' && selectedAnswer && (
-              <button type="button" onClick={() => setSelectedAnswer(null)} className="inline-flex min-h-12 items-center gap-2 rounded-lg border border-border-strong px-4 py-3 text-sm font-semibold text-text-primary hover:bg-surface-muted focus-visible:outline-offset-4">
-                <Lightbulb size={18} /> Pilih jawaban lain
-              </button>
-            )}
-            {answerState !== 'correct' && answerState !== 'timeout' && !(quizMode === 'hard' && answerState === 'incorrect') && (
-              <button type="submit" disabled={!selectedAnswer} className="inline-flex min-h-12 items-center gap-2 rounded-lg bg-primary-700 px-5 py-3 text-sm font-bold text-white hover:bg-primary-800 disabled:cursor-not-allowed disabled:bg-surface-hover disabled:text-text-muted focus-visible:outline-offset-4">
-                Periksa jawaban <CheckCircle size={18} weight="bold" />
-              </button>
-            )}
-            {isComplete && <FlagCheckered size={18} aria-hidden="true" />}
+          <div className="sticky bottom-0 z-10 mt-6 -mx-4 border-t border-border bg-surface/95 px-4 pb-[max(env(safe-area-inset-bottom),1rem)] pt-4 backdrop-blur-sm sm:-mx-6 sm:px-6">
+            <div className="flex flex-wrap justify-end gap-3">
+              {answerState === 'correct' && (
+                <button type="button" onClick={advance} className="inline-flex min-h-12 items-center gap-2 rounded-lg bg-primary-700 px-5 py-3 text-sm font-bold text-white hover:bg-primary-800 focus-visible:outline-offset-4">
+                  {currentQuestionIndex === activeQuestions.length - 1 ? 'Lihat hasil' : 'Soal berikutnya'} <ArrowRight size={18} weight="bold" />
+                </button>
+              )}
+              {(answerState === 'incorrect' && quizMode === 'hard' || answerState === 'timeout') && (
+                <button type="button" onClick={advance} className="inline-flex min-h-12 items-center gap-2 rounded-lg bg-primary-700 px-5 py-3 text-sm font-bold text-white hover:bg-primary-800 focus-visible:outline-offset-4">
+                  {currentQuestionIndex === activeQuestions.length - 1 ? 'Lihat hasil' : 'Lanjut soal'} <ArrowRight size={18} weight="bold" />
+                </button>
+              )}
+              {answerState === 'incorrect' && quizMode === 'santai' && selectedAnswer && (
+                <button type="button" onClick={() => setSelectedAnswer(null)} className="inline-flex min-h-12 items-center gap-2 rounded-lg border border-border-strong px-4 py-3 text-sm font-semibold text-text-primary hover:bg-surface-muted focus-visible:outline-offset-4">
+                  <Lightbulb size={18} /> Pilih jawaban lain
+                </button>
+              )}
+              {answerState !== 'correct' && answerState !== 'timeout' && !(quizMode === 'hard' && answerState === 'incorrect') && (
+                <button type="submit" disabled={!selectedAnswer} className="inline-flex min-h-12 items-center gap-2 rounded-lg bg-primary-700 px-5 py-3 text-sm font-bold text-white hover:bg-primary-800 disabled:cursor-not-allowed disabled:bg-surface-hover disabled:text-text-muted focus-visible:outline-offset-4">
+                  Periksa jawaban <CheckCircle size={18} weight="bold" />
+                </button>
+              )}
+              {isComplete && <FlagCheckered size={18} aria-hidden="true" />}
+            </div>
           </div>
         </form>
       </div>
