@@ -35,24 +35,54 @@ function ScrollRevealObserver() {
   const { pathname } = useLocation()
 
   useEffect(() => {
-    const targets = document.querySelectorAll<HTMLElement>('[data-scroll-reveal]')
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-    if (reducedMotion || !('IntersectionObserver' in window)) {
-      targets.forEach((target) => target.classList.add('is-revealed'))
-      return
+    function observeTargets() {
+      const targets = document.querySelectorAll<HTMLElement>('[data-scroll-reveal]:not(.is-revealed)')
+
+      if (reducedMotion || !('IntersectionObserver' in window)) {
+        targets.forEach((target) => target.classList.add('is-revealed'))
+        return undefined
+      }
+
+      if (targets.length === 0) return undefined
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return
+          entry.target.classList.add('is-revealed')
+          observer.unobserve(entry.target)
+        })
+      }, { threshold: 0.12, rootMargin: '0px 0px -5% 0px' })
+
+      targets.forEach((target) => observer.observe(target))
+      return observer
     }
 
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return
-        entry.target.classList.add('is-revealed')
-        observer.unobserve(entry.target)
-      })
-    }, { threshold: 0.12, rootMargin: '0px 0px -5% 0px' })
+    let observer: IntersectionObserver | undefined
+    const scheduleRevealCheck = () => {
+      if (typeof window === 'undefined') return
 
-    targets.forEach((target) => observer.observe(target))
-    return () => observer.disconnect()
+      window.requestAnimationFrame(() => {
+        observer?.disconnect()
+        observer = observeTargets()
+      })
+    }
+
+    scheduleRevealCheck()
+
+    const mutationObserver = new MutationObserver(() => {
+      const unrevealed = document.querySelectorAll<HTMLElement>('[data-scroll-reveal]:not(.is-revealed)')
+      if (unrevealed.length > 0) {
+        scheduleRevealCheck()
+      }
+    })
+    mutationObserver.observe(document.body, { childList: true, subtree: true })
+
+    return () => {
+      observer?.disconnect()
+      mutationObserver.disconnect()
+    }
   }, [pathname])
 
   return null

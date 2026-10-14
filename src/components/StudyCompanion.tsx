@@ -293,10 +293,17 @@ export function StudyCompanion() {
     )
   }
 
-  /* Gunakan visualViewport untuk positioning yang benar saat keyboard buka di mobile */
-  const bottomPosition = visualViewport.height > 0
-    ? visualViewport.offsetTop + visualViewport.height - 100
-    : 84 /* 5.25rem = 84px */
+  /* Gunakan visualViewport untuk positioning yang benar saat keyboard buka di mobile.
+     CSS bottom = jarak dari bawah viewport.
+     - Tanpa keyboard (atau SSR): fallback 84px (5.25rem, di atas bottom nav 64px + gap)
+     - Dengan keyboard: window.innerHeight - (vp.offsetTop + vp.height) = area di bawah visible viewport
+       → bottom = area tersebut + 16px gap agar Aksa duduk tepat di atas keyboard */
+  const keyboardOffset = visualViewport.height > 0
+    ? window.innerHeight - (visualViewport.offsetTop + visualViewport.height)
+    : 0
+  const bottomPosition = keyboardOffset > 10
+    ? keyboardOffset + 16   // keyboard terbuka: posisi di atas keyboard
+    : 84                     // normal: 5.25rem di atas bottom nav
 
   return (
     <div className="fixed right-3 z-50 flex flex-col items-end gap-3 md:bottom-5 md:right-5"
